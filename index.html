@@ -18,8 +18,8 @@
         justify-content: center;
     }
 
-    /* 願書の用紙デザイン */
-    #game-container {
+    /* 願書・メイン画面のコンテナ */
+    #game-container, #main-screen {
         background-color: #ffffff;
         width: 100%;
         max-width: 500px;
@@ -28,9 +28,7 @@
         box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
         position: relative;
     }
-
-    /* 内側の細い枠線 */
-    #game-container::before {
+    #game-container::before, #main-screen::before {
         content: "";
         position: absolute;
         top: 4px; left: 4px; right: 4px; bottom: 4px;
@@ -38,7 +36,7 @@
         pointer-events: none;
     }
 
-    /* タイトル部分 */
+    /* タイトル・スタンプ等の既存CSS */
     .form-title {
         color: #2c3e50;
         font-size: 1.6em;
@@ -52,101 +50,92 @@
         width: 100%;
         box-sizing: border-box;
     }
-
-    /* 赤いスタンプ風装飾 */
     .stamp {
         position: absolute;
-        top: 20px;
-        right: 20px;
-        width: 60px;
-        height: 60px;
+        top: 20px; right: 20px;
+        width: 60px; height: 60px;
         border: 2px solid #d9534f;
         border-radius: 50%;
         color: #d9534f;
-        font-weight: bold;
-        font-size: 0.9em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        line-height: 1.2;
-        transform: rotate(15deg);
-        opacity: 0.8;
+        font-weight: bold; font-size: 0.9em;
+        display: flex; align-items: center; justify-content: center;
+        text-align: center; line-height: 1.2;
+        transform: rotate(15deg); opacity: 0.8;
     }
-
-    /* レイアウト（項目と値） */
-    .form-row {
-        display: flex;
-        margin-bottom: 15px;
-        align-items: baseline;
-    }
-    .form-label {
-        width: 130px;
-        font-size: 0.85em;
-        color: #666;
-        flex-shrink: 0;
-    }
-    .form-value {
-        font-size: 1.05em;
-        color: #111;
-        flex-grow: 1;
-    }
-    .name-value {
-        font-size: 1.5em;
-        letter-spacing: 0.1em;
-    }
-    .special-buff {
-        color: #d95319;
-        font-size: 0.8em;
-        display: block;
-        font-weight: bold;
-        margin-top: 3px;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-    }
-
-    /* 入力エリア */
+    .form-row { display: flex; margin-bottom: 15px; align-items: baseline; }
+    .form-label { width: 130px; font-size: 0.85em; color: #666; flex-shrink: 0; }
+    .form-value { font-size: 1.05em; color: #111; flex-grow: 1; }
+    .name-value { font-size: 1.5em; letter-spacing: 0.1em; }
+    .special-buff { color: #d95319; font-size: 0.8em; display: block; font-weight: bold; margin-top: 3px; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    
     input[type="text"] {
-        font-family: "Yu Mincho", "MS Mincho", serif;
-        font-size: 1em;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-        width: 90%;
-        background-color: #fafafa;
+        font-family: "Yu Mincho", "MS Mincho", serif; font-size: 1em; padding: 8px;
+        border: 1px solid #ccc; border-radius: 3px; width: 90%; background-color: #fafafa;
     }
-    input[type="text"]:focus {
-        border-color: #2c3e50;
-        outline: none;
-        background-color: #fff;
-    }
+    input[type="text"]:focus { border-color: #2c3e50; outline: none; background-color: #fff; }
 
-    /* ボタンデザイン */
-    .btn-area {
-        text-align: center;
-        margin-top: 30px;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-    }
+    .btn-area { text-align: center; margin-top: 30px; font-family: 'Helvetica Neue', Arial, sans-serif; }
     button {
-        background-color: #2c3e50;
-        color: #ffffff;
-        border: none;
-        padding: 12px 24px;
-        font-size: 1em;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.2s, transform 0.1s;
+        background-color: #2c3e50; color: #ffffff; border: none;
+        padding: 12px 24px; font-size: 1em; border-radius: 4px;
+        cursor: pointer; transition: background-color 0.2s, transform 0.1s;
+        margin: 5px;
     }
-    button:hover {
+    button:hover { background-color: #1a252f; }
+    button:active { transform: scale(0.98); }
+    
+    /* メインゲーム用の追加CSS */
+    #status-bar {
+        background-color: #2c3e50; color: #fff; padding: 10px; border-radius: 4px;
+        font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85em;
+        display: flex; flex-wrap: wrap; justify-content: space-between; margin-bottom: 20px;
+    }
+    .status-item { width: 30%; margin-bottom: 5px; }
+    .status-item span { color: #f39c12; font-weight: bold; font-size: 1.2em; }
+    
+    /* ヘッダー情報（時間・年齢・コンビ歴） */
+    .status-header { 
+        width: 100%; font-size: 1.1em; font-weight: bold; margin-bottom: 10px; 
+        color: #f0f2f5; border-bottom: 1px solid #555; padding-bottom: 5px;
+        display: flex; justify-content: space-between;
+    }
+    
+    #story-area {
+        background-color: #fafafa; padding: 20px; border: 1px solid #ccc; border-radius: 4px;
+        min-height: 120px; font-size: 1.1em; line-height: 1.8; margin-bottom: 20px;
+    }
+    #choices-area { display: flex; flex-direction: column; gap: 10px; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .choice-btn { background-color: #d95319; font-weight: bold; }
+    .choice-btn:hover { background-color: #bf4310; }
+
+    /* 履歴ログエリア */
+    #history-area {
+        margin-top: 25px;
+        padding: 15px;
         background-color: #1a252f;
+        color: #ecf0f1;
+        border-radius: 4px;
+        height: 150px;
+        overflow-y: auto;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        font-size: 0.9em;
+        border: 2px solid #ccc;
     }
-    button:active {
-        transform: scale(0.98);
+    .history-entry {
+        margin-bottom: 6px;
+        border-bottom: 1px dotted #7f8c8d;
+        padding-bottom: 4px;
+    }
+    .history-entry:last-child {
+        border-bottom: none;
+    }
+    .history-date {
+        color: #f39c12;
+        font-weight: bold;
+        margin-right: 10px;
     }
 
-    /* 隠し要素 */
-    .hidden {
-        display: none !important;
-    }
+    .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -155,27 +144,20 @@
 <div id="start-screen" style="text-align: center; max-width: 450px; margin-top: 50px; font-family: 'Helvetica Neue', Arial, sans-serif;">
     <h1 style="color: #2c3e50;">芸人ガチャ <span style="color:#d95319;">＜よしもと＞</span></h1>
     <p style="color: #555; line-height: 1.6;">笑える人生になるかはあなた次第。<br>あなたの芸人人生は、ここから決まります。</p>
-    <button onclick="rollGacha()" style="margin-top: 20px;">願書を作成する</button>
+    <button onclick="rollGacha()" style="margin-top: 20px;">NSC願書を作成する</button>
 </div>
 
-<!-- 願書（結果・入力）画面 -->
+<!-- 願書画面 -->
 <div id="game-container" class="hidden">
-    <div class="stamp" id="form-stamp">願書<br>作成中</div>
+    <div class="stamp">NSC<br>作成中</div>
     <div class="form-title">入 学 願 書</div>
-
     <div id="stats-content"></div>
-
-    <!-- コンビ名・芸名入力エリア -->
     <div id="naming-area" style="border-top: 2px solid #2c3e50; margin-top: 25px; padding-top: 20px;">
         <div class="form-row">
             <div class="form-label" id="naming-label" style="font-weight: bold; color: #2c3e50;">コンビ名<br><span style="font-size: 0.8em; font-weight: normal;">(任意)</span></div>
-            <div class="form-value">
-                <input type="text" id="name-input" placeholder="未入力で自動生成されます">
-            </div>
+            <div class="form-value"><input type="text" id="name-input" placeholder="未入力で自動生成されます"></div>
         </div>
-        <div class="btn-area">
-            <button onclick="submitForm()">この内容で願書を提出する</button>
-        </div>
+        <div class="btn-area"><button onclick="submitForm()">この内容で願書を提出する</button></div>
     </div>
 </div>
 
@@ -184,49 +166,80 @@
     <div class="stamp" style="border-color: #5cb85c; color: #5cb85c; transform: rotate(-10deg);">受理済</div>
     <h2 style="color: #2c3e50;">願書を受理しました</h2>
     <p id="final-announcement" style="font-size: 1.2em; font-weight: bold; color: #d95319; margin: 30px 0;"></p>
-    <p>いよいよ、NSCでの過酷な1年目が始まります。</p>
-    <button onclick="alert('プロトタイプはここまでです！')" style="margin-top: 20px;">1年目を開始する</button>
+    <button onclick="startGame()" style="margin-top: 20px;">1年目を開始する</button>
+</div>
+
+<!-- メインゲーム画面 -->
+<div id="main-screen" class="hidden">
+    <!-- ステータスバー -->
+    <div id="status-bar">
+        <div class="status-header">
+            <span><span id="ui-year">1</span>年目 <span id="ui-month">4</span>月 (<span id="ui-age">22</span>歳)</span>
+            <span id="ui-combi-name" style="color:#f39c12;"></span>
+            <span id="ui-combi-duration" style="font-size:0.9em; font-weight:normal;">結成: 0年0ヶ月</span>
+        </div>
+        <div class="status-item">資金: <span id="ui-money">0</span>万</div>
+        <div class="status-item">体力: <span id="ui-stamina">100</span></div>
+        <div class="status-item">ネタ力: <span id="ui-neta">5</span></div>
+        <div class="status-item">平場力: <span id="ui-hiraba">5</span></div>
+        <div class="status-item">人気: <span id="ui-pop">0</span></div>
+        <div class="status-item" id="ui-relation-box">コンビ仲: <span id="ui-relation">50</span></div>
+    </div>
+    
+    <!-- テキストエリア -->
+    <div id="story-area">
+        ここにテキストが表示されます。
+    </div>
+
+    <!-- 選択肢エリア -->
+    <div id="choices-area">
+        <!-- ボタンが動的に追加されます -->
+    </div>
+
+    <!-- 履歴エリア -->
+    <div id="history-area">
+        <div style="color: #bdc3c7; margin-bottom: 10px; font-weight: bold; font-size: 1.1em;">▼ 芸人人生の記録</div>
+        <div id="history-content"></div>
+    </div>
 </div>
 
 <script>
+    // --- 初期データ ---
     let isDuo = false;
     let generatedMyName = '';
+    let finalCombiName = '';
+    let selectedFamily = '';
+    let luckStat = 50;
+    let globalAge = 20;
 
-    const lastNames = ['佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山田', '松本', '浜田', '石田', '山口', '斎藤', '木村', '林', '清水', '山崎', '池田', '阿部', '森', '橋本', '山下', '石川', '中島', '前田', '藤井', '小川', '岡田', '長谷川', '村上', '近藤', '石井', '坂本', '遠藤', '青木', '藤田', '西村', '福田', '太田', '三浦', '岡本', '松田', '中川', '中野', '原田', '小野'];
-    const firstNamesMale = ['翔太', '大輝', '健太', '拓海', '翼', '蓮', '真', '大輔', '隆史', '和也', '樹', '湊', '悠真', '陽翔', '朝陽', '蒼', '結翔', '悠人', '陽太', '陸', '大翔', '悠', '颯太', '歩夢', '空', '太陽', '涼平', '浩二', '誠', '達也'];
-    const firstNamesFemale = ['さくら', '結衣', '陽菜', '莉子', '美咲', 'あおい', '楓', '七海', '愛', '瞳', '凛', '紬', '澪', '結愛', '陽葵', '琴音', '杏', '結月', '桜', '詩', '美月', '結菜', '咲良', '莉奈', '真由', '彩音', '華', '美穂', '香織', '奈々'];
+    // 進行・ステータスデータ
+    let currentYear = 1;
+    let currentMonth = 4;
+    let combiMonths = 0;
+    let hasCombi = false;
+    let stats = { money: 0, stamina: 100, neta: 5, hiraba: 5, pop: 0, relation: 50 };
+    let historyLog = [];
+
+    const lastNames = ['佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山田', '松本', '浜田', '石田', '山口', '斎藤', '木村', '林', '清水', '山崎', '池田', '阿部', '森', '橋本'];
+    const firstNamesMale = ['翔太', '大輝', '健太', '拓海', '翼', '蓮', '真', '大輔', '隆史', '和也', '樹', '湊'];
+    const firstNamesFemale = ['さくら', '結衣', '陽菜', '莉子', '美咲', 'あおい', '楓', '七海', '愛', '瞳'];
     
-    // 47都道府県に確率の重み付け
     const prefectures = [
-        {name: '大阪府', weight: 25}, {name: '東京都', weight: 20},
-        {name: '兵庫県', weight: 10}, {name: '京都府', weight: 10},
-        {name: '神奈川県', weight: 8}, {name: '埼玉県', weight: 8}, {name: '千葉県', weight: 8}, {name: '福岡県', weight: 6},
-        {name: '北海道', weight: 4}, {name: '愛知県', weight: 4}, {name: '広島県', weight: 4}, {name: '宮城県', weight: 4},
-        {name: '奈良県', weight: 3}, {name: '滋賀県', weight: 3}, {name: '和歌山県', weight: 2}, {name: '静岡県', weight: 2}, {name: '沖縄県', weight: 2},
-        // 以下の地方はすべてウェイト1（低確率）
-        {name: '青森県', weight: 1}, {name: '岩手県', weight: 1}, {name: '秋田県', weight: 1}, {name: '山形県', weight: 1}, {name: '福島県', weight: 1},
-        {name: '茨城県', weight: 1}, {name: '栃木県', weight: 1}, {name: '群馬県', weight: 1},
-        {name: '新潟県', weight: 1}, {name: '富山県', weight: 1}, {name: '石川県', weight: 1}, {name: '福井県', weight: 1},
-        {name: '山梨県', weight: 1}, {name: '長野県', weight: 1}, {name: '岐阜県', weight: 1}, {name: '三重県', weight: 1},
-        {name: '鳥取県', weight: 1}, {name: '島根県', weight: 1}, {name: '岡山県', weight: 1}, {name: '山口県', weight: 1},
-        {name: '徳島県', weight: 1}, {name: '香川県', weight: 1}, {name: '愛媛県', weight: 1}, {name: '高知県', weight: 1},
-        {name: '佐賀県', weight: 1}, {name: '長崎県', weight: 1}, {name: '熊本県', weight: 1}, {name: '大分県', weight: 1}, {name: '宮崎県', weight: 1}, {name: '鹿児島県', weight: 1}
+        {name: '大阪府', weight: 25}, {name: '東京都', weight: 20}, {name: '兵庫県', weight: 10}, {name: '京都府', weight: 10},
+        {name: '神奈川県', weight: 8}, {name: '埼玉県', weight: 8}, {name: '福岡県', weight: 6}, {name: '北海道', weight: 4},
+        {name: '青森県', weight: 1}, {name: '沖縄県', weight: 2}
     ];
 
-    // 【追加・修正】実家の太さの確率（ウェイト）設定
     const families = [
-        {name: '普通の家庭', weight: 45},
-        {name: '中流家庭', weight: 25},
-        {name: '貧乏（奨学金とバイト頼り）', weight: 23},
-        {name: 'その日暮らしの極貧', weight: 5},
+        {name: '普通の家庭', weight: 45}, {name: '中流家庭', weight: 25},
+        {name: '貧乏（奨学金とバイト頼り）', weight: 23}, {name: 'その日暮らしの極貧', weight: 5},
         {name: '超裕福（仕送り月30万）', weight: 2}
     ];
 
-    const relationships = ['小学校の同級生','中学の同級生','高校の同級生','大学の同級生','専門の同級生', '幼なじみ', '大学お笑いサークルの先輩後輩', 'バイト先の同僚'];
-
-    const namePart1 = ['鉄骨', '東京', '電脳', 'ぽけっと', 'スーパー', '爆笑', 'センチメンタル', 'マカロニ', '真空', '純白', '弾丸', '黄金', '令和', '昭和', '平成', '世紀末', '幻の', '疾風', '漆黒', '虹色', '逆襲の', '永遠の', '週末', '深夜', '無限', '電撃', 'マッハ', 'ミラクル', 'ハッピー', 'アバンギャルド', 'ストロベリー', 'ダンボール', '雑草', '都会の', '宇宙'];
-    const namePart2 = ['チェリー', 'スパンコール', 'モグラ', 'ロケット', 'ダイナマイツ', 'トルネード', 'ボーイズ', 'サラダ', 'ジェシカ', 'サンダー', 'エクスプレス', 'クラブ', 'ブラザーズ', 'シスターズ', 'パンダ', 'サムライ', 'ドラゴン', 'ピーチ', 'マシンガン', 'スナイパー', 'ギャラクシー', 'モンスター', 'ゾンビ', 'パイレーツ', 'ファミリー', 'エンジェル', 'デビル', '太郎', '娘', '坊主', 'ハスラー', 'パラダイス', 'マジック', '定食', '弁当'];
-    const singleNames = ['末脚自慢', 'タスカータソルテ', 'メトロノーム', 'ペトリコール', '蜃気楼', 'かげろう', 'ガレージ', '信号機', 'シャンプー', '冷蔵庫', '蛍光灯', 'ノートブック', 'カレンダー', 'ヴェルトライゼンデ', 'バンソウコウ', 'ほうき星', 'ブーメラン', 'アンテナ', '万華鏡', 'クレヨン', '画用紙', '少年の詩', 'ビー玉', 'けん玉', 'ルヴァンスレーヴ', 'ブランコ', 'すべり台', 'ジャングルジム', 'シーソー', 'ベンチ', '交差点', '南改札口', 'デュランダル', 'ぼくの路線図', 'つり革', '網棚', 'ブエナビスタ', 'キンチェム', 'パスポート', '辞書', '図鑑', '地図', '羅針盤', '望遠鏡', '顕微鏡', '虫眼鏡', 'フラスコ', 'ビーカー', 'ピンセット', 'アルコール'];
+    const relationships = ['高校の同級生', '幼なじみ', '大学お笑いサークルの先輩後輩', 'バイト先の同僚'];
+    const namePart1 = ['鉄骨', '東京', '電脳', '爆笑', '真空', '純白', 'マッハ', 'ミラクル'];
+    const namePart2 = ['チェリー', 'モグラ', 'ダイナマイツ', 'ボーイズ', 'ジェシカ', 'サンダー', '太郎', '弁当'];
+    const singleNames = ['末脚自慢', 'タスカータソルテ', 'メトロノーム', '蜃気楼', '蛍光灯', 'ヴェルトライゼンデ', '少年の詩', 'デュランダル'];
 
     function getRandomName(gender) {
         let ln = lastNames[Math.floor(Math.random() * lastNames.length)];
@@ -234,30 +247,14 @@
         return ln + ' ' + fn;
     }
 
-    // 重み付けに基づいた都道府県の抽選
-    function getWeightedRandomPrefecture() {
-        let totalWeight = prefectures.reduce((sum, pref) => sum + pref.weight, 0);
+    function getWeightedRandom(arr) {
+        let totalWeight = arr.reduce((sum, item) => sum + item.weight, 0);
         let randomValue = Math.random() * totalWeight;
-        for (let i = 0; i < prefectures.length; i++) {
-            if (randomValue < prefectures[i].weight) {
-                return prefectures[i].name;
-            }
-            randomValue -= prefectures[i].weight;
+        for (let i = 0; i < arr.length; i++) {
+            if (randomValue < arr[i].weight) return arr[i].name;
+            randomValue -= arr[i].weight;
         }
-        return '大阪府';
-    }
-
-    // 重み付けに基づいた実家の太さの抽選
-    function getWeightedRandomFamily() {
-        let totalWeight = families.reduce((sum, fam) => sum + fam.weight, 0);
-        let randomValue = Math.random() * totalWeight;
-        for (let i = 0; i < families.length; i++) {
-            if (randomValue < families[i].weight) {
-                return families[i].name;
-            }
-            randomValue -= families[i].weight;
-        }
-        return '普通の家庭';
+        return arr[0].name;
     }
 
     function rollGacha() {
@@ -266,122 +263,53 @@
         
         let gender = Math.random() < 0.7 ? '男' : '女';
         generatedMyName = getRandomName(gender);
-        
-        let pref = getWeightedRandomPrefecture();
+        let pref = getWeightedRandom(prefectures);
         
         let eduRand = Math.random();
-        let edu, age, special = '';
-        if (eduRand < 0.05) { 
-            edu = '中学校 卒業'; age = Math.floor(Math.random() * 3) + 16;
-        } else if (eduRand < 0.25) { 
-            edu = '高等学校 卒業'; age = Math.floor(Math.random() * 3) + 18;
-            if (Math.random() < 0.2) special = '★ハイスクールマンザイ実績持ち';
-        } else if (eduRand < 0.50) { 
-            edu = '専門学校 卒業'; age = Math.floor(Math.random() * 3) + 20; 
-        } else if (eduRand < 0.95) { 
-            edu = '大学 卒業'; age = Math.floor(Math.random() * 4) + 22; 
-            let r = Math.random();
-            if (r < 0.1) special = '★大学芸会（学生お笑い）実績持ち';
-            else if (r < 0.15) special = '★トップ国立大卒（クイズ番組枠候補）';
-        } else { 
-            edu = '大学院 修了'; age = Math.floor(Math.random() * 5) + 24; 
-        }
+        let edu, special = '';
+        if (eduRand < 0.05) { edu = '中学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 16; } 
+        else if (eduRand < 0.25) { edu = '高等学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 18; } 
+        else if (eduRand < 0.50) { edu = '専門学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 20; } 
+        else if (eduRand < 0.95) { edu = '大学 卒業'; globalAge = Math.floor(Math.random() * 4) + 22; } 
+        else { edu = '大学院 修了'; globalAge = Math.floor(Math.random() * 5) + 24; }
 
-        // 実家の太さの抽選をウェイト方式に変更
-        let family = getWeightedRandomFamily();
-        
-        let luck = Math.floor(Math.random() * 100) + 1;
-        console.log("隠しパラメータ 運: " + luck);
+        selectedFamily = getWeightedRandom(families);
+        luckStat = Math.floor(Math.random() * 100) + 1;
 
         isDuo = Math.random() < 0.5;
         let admission = isDuo ? 'コンビ入学' : '単独入学（ピン）';
+        hasCombi = isDuo;
         
         let partnerHtml = '';
         if (isDuo) {
             let pGender = Math.random() < 0.7 ? '男' : '女';
-            let pName = getRandomName(pGender);
-            let relation = relationships[Math.floor(Math.random() * relationships.length)];
-            
-            partnerHtml = `
-                <div class="form-row">
-                    <div class="form-label">相方氏名</div>
-                    <div class="form-value">${pName} (${pGender})</div>
-                </div>
-                <div class="form-row">
-                    <div class="form-label">関係性</div>
-                    <div class="form-value">${relation}</div>
-                </div>
-            `;
+            partnerHtml = `<div class="form-row"><div class="form-label">相方氏名</div><div class="form-value">${getRandomName(pGender)} (${pGender})</div></div>`;
             document.getElementById('naming-label').innerHTML = 'コンビ名<br><span style="font-size: 0.8em; font-weight: normal;">(任意)</span>';
         } else {
             document.getElementById('naming-label').innerHTML = '希望する芸名<br><span style="font-size: 0.8em; font-weight: normal;">(任意)</span>';
         }
 
-        let specialHtml = special ? `<span class="special-buff">${special}</span>` : '';
-
-        let html = `
-            <div class="form-row" style="margin-bottom: 25px;">
-                <div class="form-label" style="margin-top: 15px;">氏名</div>
-                <div class="form-value name-value">
-                    ${generatedMyName}
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">出身地</div>
-                <div class="form-value">${pref}</div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">最終学歴</div>
-                <div class="form-value">${edu} ${specialHtml}</div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">年齢</div>
-                <div class="form-value">${age}歳</div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">実家の太さ</div>
-                <div class="form-value">${family}</div>
-            </div>
-            <div style="border-top: 1px dashed #ccc; margin: 20px 0;"></div>
-            <div class="form-row">
-                <div class="form-label">入学形態</div>
-                <div class="form-value" style="font-weight: bold;">${admission}</div>
-            </div>
+        document.getElementById('stats-content').innerHTML = `
+            <div class="form-row"><div class="form-label">氏名</div><div class="form-value name-value">${generatedMyName}</div></div>
+            <div class="form-row"><div class="form-label">出身地</div><div class="form-value">${pref}</div></div>
+            <div class="form-row"><div class="form-label">年齢</div><div class="form-value">${globalAge}歳</div></div>
+            <div class="form-row"><div class="form-label">実家の太さ</div><div class="form-value">${selectedFamily}</div></div>
+            <div class="form-row"><div class="form-label">入学形態</div><div class="form-value" style="font-weight: bold;">${admission}</div></div>
             ${partnerHtml}
         `;
-
-        document.getElementById('stats-content').innerHTML = html;
     }
 
     function submitForm() {
         let inputName = document.getElementById('name-input').value.trim();
-        let finalName = '';
-
         if (inputName !== '') {
-            finalName = inputName;
+            finalCombiName = inputName;
         } else {
             if (isDuo) {
-                if (Math.random() < 0.7) {
-                    let p1 = namePart1[Math.floor(Math.random() * namePart1.length)];
-                    let p2 = namePart2[Math.floor(Math.random() * namePart2.length)];
-                    finalName = p1 + p2;
-                } else {
-                    finalName = singleNames[Math.floor(Math.random() * singleNames.length)];
-                }
-                alert('コンビ名が未入力だったため、自動で「' + finalName + '」として登録されました。');
+                if (Math.random() < 0.7) finalCombiName = namePart1[Math.floor(Math.random() * namePart1.length)] + namePart2[Math.floor(Math.random() * namePart2.length)];
+                else finalCombiName = singleNames[Math.floor(Math.random() * singleNames.length)];
             } else {
-                finalName = generatedMyName;
-                alert('芸名が未入力だったため、本名（' + finalName + '）で登録されました。');
+                finalCombiName = generatedMyName;
             }
         }
 
-        document.getElementById('game-container').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        
-        let prefix = isDuo ? 'コンビ' : 'ピン芸人';
-        document.getElementById('final-announcement').innerText = prefix + '「' + finalName + '」として登録完了';
-    }
-</script>
-
-</body>
-</html>
+        document
