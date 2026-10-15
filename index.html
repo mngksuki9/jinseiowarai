@@ -63,7 +63,7 @@
         transform: rotate(15deg); opacity: 0.8;
     }
     .form-row { display: flex; margin-bottom: 10px; align-items: baseline; }
-    .form-label { width: 100px; font-size: 0.8em; color: #666; flex-shrink: 0; }
+    .form-label { width: 110px; font-size: 0.8em; color: #666; flex-shrink: 0; }
     .form-value { font-size: 0.95em; color: #111; flex-grow: 1; word-break: break-all; }
     .name-value { font-size: 1.3em; letter-spacing: 0.05em; }
     .special-buff { color: #d95319; font-size: 0.75em; display: block; font-weight: bold; margin-top: 2px; font-family: 'Helvetica Neue', Arial, sans-serif; }
@@ -165,15 +165,15 @@
     <div class="stamp" style="border-color: #5cb85c; color: #5cb85c; transform: rotate(-10deg);">受理済</div>
     <h2 style="color: #2c3e50; font-size: 1.3em;">願書を受理しました</h2>
     <p id="final-announcement" style="font-size: 1em; font-weight: bold; color: #d95319; margin: 20px 0; word-break: break-all;"></p>
-    <button onclick="startGame()" style="margin-top: 10px; width: 80%;">1年目を開始する</button>
+    <button onclick="startGame()" style="margin-top: 10px; width: 80%;">NSCに入学する</button>
 </div>
 
 <div id="main-screen" class="hidden">
     <div id="status-bar">
         <div class="status-header">
-            <span><span id="ui-year">1</span>年 <span id="ui-month">4</span>月 (<span id="ui-age">22</span>歳)</span>
-            <span id="ui-combi-name" style="color:#f39c12; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
-            <span id="ui-combi-duration" style="font-size:0.85em; font-weight:normal;">結成:0年</span>
+            <span><span id="ui-time-label">NSC 4月</span> (<span id="ui-age">22</span>歳)</span>
+            <span id="ui-combi-name" style="color:#f39c12; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+            <span id="ui-combi-duration" style="font-size:0.8em; font-weight:normal;">結成:0年</span>
         </div>
         <div class="status-item">資金: <span id="ui-money">0</span>万</div>
         <div class="status-item">体力: <span id="ui-stamina">100</span></div>
@@ -200,11 +200,13 @@
     let generatedMyName = '';
     let finalCombiName = '';
     let selectedFamily = '';
+    let occupationText = ''; // 前職/ステータス
+    let initialMoney = 5;
     let luckStat = 50;
     let globalAge = 20;
     let specialBuffText = '';
 
-    let currentYear = 1;
+    let currentYearNumber = 0; // 0 = NSC在籍中, 1 = 1年目, 2 = 2年目...
     let currentMonth = 4;
     let combiMonths = 0;
     let hasCombi = false;
@@ -238,6 +240,7 @@
     ];
 
     const relationships = ['小学校の同級生','中学の同級生','高校の同級生','大学の同級生','専門の同級生', '幼なじみ', '大学お笑いサークルの先輩後輩', 'バイト先の同僚'];
+    const occupations = ['会社員', '公務員', 'フリーター', 'アパレル店員', '営業マン', '飲食店店員', 'システムエンジニア', '工場作業員'];
 
     const namePart1 = ['鉄骨', '東京', '電脳', 'ぽけっと', 'スーパー', '爆笑', 'センチメンタル', 'マカロニ', '真空', '純白', '弾丸', '黄金', '令和', '昭和', '平成', '世紀末', '幻の', '疾風', '漆黒', '虹色', '逆襲の', '永遠の', '週末', '深夜', '無限', '電撃', 'マッハ', 'ミラクル', 'ハッピー', 'アバンギャルド', 'ストロベリー', 'ダンボール', '雑草', '都会の', '宇宙'];
     const namePart2 = ['チェリー', 'スパンコール', 'モグラ', 'ロケット', 'ダイナマイツ', 'トルネード', 'ボーイズ', 'サラダ', 'ジェシカ', 'サンダー', 'エクスプレス', 'クラブ', 'ブラザーズ', 'シスターズ', 'パンダ', 'サムライ', 'ドラゴン', 'ピーチ', 'マシンガン', 'スナイパー', 'ギャラクシー', 'モンスター', 'ゾンビ', 'パイレーツ', 'ファミリー', 'エンジェル', 'デビル', '太郎', '娘', '坊主', 'ハスラー', 'パラダイス', 'マジック', '定食', '弁当'];
@@ -283,20 +286,33 @@
         let eduRand = Math.random();
         let edu, special = '';
         specialBuffText = '';
+
         if (eduRand < 0.05) { 
             edu = '中学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 16; 
+            occupationText = '中学生'; initialMoney = 1;
         } else if (eduRand < 0.25) { 
             edu = '高等学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 18; 
             if (Math.random() < 0.2) { special = '★ハイスクールマンザイ実績持ち'; specialBuffText = special; }
+            occupationText = Math.random() < 0.6 ? '高校生' : occupations[Math.floor(Math.random() * occupations.length)];
         } else if (eduRand < 0.50) { 
             edu = '専門学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 20; 
+            occupationText = Math.random() < 0.5 ? '専門生' : occupations[Math.floor(Math.random() * occupations.length)];
         } else if (eduRand < 0.95) { 
             edu = '大学 卒業'; globalAge = Math.floor(Math.random() * 4) + 22; 
             let r = Math.random();
             if (r < 0.1) { special = '★大学芸会実績持ち'; specialBuffText = special; }
             else if (r < 0.15) { special = '★トップ国立大卒'; specialBuffText = special; }
+            occupationText = Math.random() < 0.4 ? '大学生' : occupations[Math.floor(Math.random() * occupations.length)];
         } else { 
             edu = '大学院 修了'; globalAge = Math.floor(Math.random() * 5) + 24; 
+            occupationText = Math.random() < 0.2 ? '大学院生' : occupations[Math.floor(Math.random() * occupations.length)];
+        }
+
+        // 社会人の場合は10万〜100万円の貯金を所持
+        if (!['中学生', '高校生', '専門生', '大学生', '大学院生'].includes(occupationText)) {
+            initialMoney = Math.floor(Math.random() * 91) + 10; // 10〜100
+        } else {
+            initialMoney = Math.floor(Math.random() * 5) + 2; // 学生は2〜6万
         }
 
         let specialHtml = special ? `<span class="special-buff">${special}</span>` : '';
@@ -319,15 +335,16 @@
         }
 
         document.getElementById('stats-content').innerHTML = `
-            <div class="form-row" style="margin-bottom: 15px;">
-                <div class="form-label" style="margin-top: 10px;">氏名</div>
+            <div class="form-row" style="margin-bottom: 12px;">
+                <div class="form-label" style="margin-top: 6px;">氏名</div>
                 <div class="form-value name-value">${generatedMyName}</div>
             </div>
             <div class="form-row"><div class="form-label">出身地</div><div class="form-value">${pref}</div></div>
+            <div class="form-row"><div class="form-label">前職 / 属性</div><div class="form-value" style="font-weight:bold; color:#d95319;">${occupationText}</div></div>
             <div class="form-row"><div class="form-label">最終学歴</div><div class="form-value">${edu} ${specialHtml}</div></div>
             <div class="form-row"><div class="form-label">年齢</div><div class="form-value">${globalAge}歳</div></div>
             <div class="form-row"><div class="form-label">実家の太さ</div><div class="form-value">${selectedFamily}</div></div>
-            <div style="border-top: 1px dashed #ccc; margin: 15px 0;"></div>
+            <div style="border-top: 1px dashed #ccc; margin: 12px 0;"></div>
             <div class="form-row"><div class="form-label">入学形態</div><div class="form-value" style="font-weight: bold;">${admission}</div></div>
             ${partnerHtml}
         `;
@@ -355,8 +372,8 @@
     }
 
     function addHistory(text) {
-        let dateStr = `${currentYear}年 ${currentMonth}月`;
-        historyLog.push({ date: dateStr, text: text });
+        let timeStr = currentYearNumber === 0 ? `NSC ${currentMonth}月` : `${currentYearNumber}年目 ${currentMonth}月`;
+        historyLog.push({ date: timeStr, text: text });
         renderHistory();
     }
 
@@ -372,8 +389,8 @@
     }
 
     function updateUI() {
-        document.getElementById('ui-year').innerText = currentYear;
-        document.getElementById('ui-month').innerText = currentMonth;
+        let timeLabel = currentYearNumber === 0 ? `NSC ${currentMonth}月` : `${currentYearNumber}年目 ${currentMonth}月`;
+        document.getElementById('ui-time-label').innerText = timeLabel;
         document.getElementById('ui-age').innerText = globalAge;
         document.getElementById('ui-combi-name').innerText = finalCombiName;
 
@@ -422,11 +439,10 @@
         document.getElementById('result-screen').classList.add('hidden');
         document.getElementById('main-screen').classList.remove('hidden');
 
-        if (selectedFamily.includes('超裕福')) stats.money = 50;
-        else if (selectedFamily.includes('中流家庭')) stats.money = 15;
-        else if (selectedFamily.includes('極貧')) stats.money = 1;
-        else stats.money = 5; 
-        
+        stats.money = initialMoney; // 前職の貯金を反映
+        currentYearNumber = 0; // NSC時代
+        currentMonth = 4;
+
         addHistory('NSCに入学した。');
         updateUI();
 
@@ -494,7 +510,7 @@
                     
                     setChoices([
                         {
-                            text: '1年目の生活をスタートする',
+                            text: 'NSCの生活を進める',
                             action: () => {
                                 advanceMonth(); 
                             }
@@ -507,11 +523,16 @@
 
     // --- 毎月のループ進行エンジン ---
     function advanceMonth() {
-        // 3月の次は4月（翌年）になり「大ライブ」へ
+        // 4月になったら「年間方針の選択」を行う
+        if (currentMonth === 4) {
+            startYearlyPolicySelection();
+            return;
+        }
+
+        // 3月の次は翌年4月になり、NSC卒業なら「大ライブ」、卒業後なら年度末処理
         if (currentMonth === 3) {
-            // 年末（3月）の年間解散判定チェック
             if (hasCombi) {
-                let yearlyDissolveRate = isInitialDuo ? 0.05 : 0.40; // コンビ入学5%、NSC結成40%
+                let yearlyDissolveRate = isInitialDuo ? 0.05 : 0.40; 
                 if (Math.random() < yearlyDissolveRate) {
                     hasCombi = false;
                     addHistory(`方向性の違いから、3月を迎えるタイミングでコンビ『${finalCombiName}』が解散…。`);
@@ -520,22 +541,13 @@
                     setChoices([
                         {
                             text: 'ピンとして活動を続ける',
-                            action: () => { 
-                                currentMonth = 4;
-                                currentYear++;
-                                globalAge++;
-                                startBigLive(); 
-                            }
+                            action: () => { finishMarchTransition(); }
                         }
                     ]);
                     return;
                 }
             }
-
-            currentMonth = 4;
-            currentYear++;
-            globalAge++;
-            startBigLive();
+            finishMarchTransition();
             return;
         }
 
@@ -548,8 +560,8 @@
             return;
         }
 
-        let monthTitle = `${currentYear}年 ${currentMonth}月`;
-        setStory(`【${monthTitle}】<br>今月は何に注力しますか？`);
+        let timeStr = currentYearNumber === 0 ? `NSC ${currentMonth}月` : `${currentYearNumber}年目 ${currentMonth}月`;
+        setStory(`【${timeStr}】<br>今月は何に注力しますか？`);
         setChoices([
             {
                 text: 'ネタ合わせに励む（ネタ力UP / 体力微減）',
@@ -582,6 +594,80 @@
                 }
             }
         ]);
+    }
+
+    // --- 4月の年間方針選択 ---
+    function startYearlyPolicySelection() {
+        let timeStr = currentYearNumber === 0 ? `NSC 4月` : `${currentYearNumber}年目 4月`;
+        setStory(`【${timeStr}：年間方針の決定】<br>今年1年間、どのような生活スタイルで芸人活動を行いますか？`);
+        setChoices([
+            {
+                text: 'ネタに注力（ほとんどバイトしない / ネタ力大幅UP・資金大幅減）',
+                action: () => {
+                    stats.neta += 8;
+                    stats.money -= 4; // 生活費で赤字になりやすい
+                    if (stats.money < 0) addHistory('生活費が足りず、借金生活に突入した…。');
+                    addHistory('年間方針：ネタに注力（バイトをほぼせずネタを磨く）');
+                    updateUI();
+                    advanceMonthAfterPolicy();
+                }
+            },
+            {
+                text: 'バイトとネタ半分ずつ（バランス型 / ネタ力小UP・資金維持）',
+                action: () => {
+                    stats.neta += 4;
+                    stats.money += 2;
+                    addHistory('年間方針：バイトとネタを両立');
+                    updateUI();
+                    advanceMonthAfterPolicy();
+                }
+            },
+            {
+                text: 'とにかく生活の安定（バイト多め / 資金増・ネタ力停滞）',
+                action: () => {
+                    stats.money += 6;
+                    addHistory('年間方針：バイト多めで生活の安定を図る');
+                    updateUI();
+                    advanceMonthAfterPolicy();
+                }
+            }
+        ]);
+    }
+
+    function advanceMonthAfterPolicy() {
+        currentMonth++;
+        if (hasCombi) combiMonths++;
+        let timeStr = currentYearNumber === 0 ? `NSC ${currentMonth}月` : `${currentYearNumber}年目 ${currentMonth}月`;
+        setStory(`【${timeStr}】<br>方針を決めて新たな1ヶ月が始まった。今月は何をしますか？`);
+        setChoices([
+            {
+                text: 'ネタ合わせに励む',
+                action: () => { stats.neta += 3; stats.stamina -= 10; addHistory(`${currentMonth}月：ネタ合わせに励んだ。`); updateUI(); advanceMonth(); }
+            },
+            {
+                text: '相方と飲みに行く',
+                action: () => { 
+                    if (!hasCombi) { advanceMonth(); return; }
+                    if (stats.money >= 1) { stats.money -= 1; stats.relation = Math.min(100, stats.relation + 10); addHistory(`${currentMonth}月：相方と飲んだ。`); updateUI(); advanceMonth(); }
+                    else { alert("資金不足！"); advanceMonth(); }
+                }
+            }
+        ]);
+    }
+
+    function finishMarchTransition() {
+        if (currentYearNumber === 0) {
+            // NSC 3月の次は「卒業＝1年目4月」になり、大ライブ開催！
+            currentMonth = 4;
+            currentYearNumber = 1;
+            globalAge++;
+            startBigLive();
+        } else {
+            currentMonth = 4;
+            currentYearNumber++;
+            globalAge++;
+            startYearlyPolicySelection();
+        }
     }
 
     // --- 夏前の「2回目相方探しの会」 ---
@@ -639,9 +725,9 @@
         ]);
     }
 
-    // --- 翌年4月：大ライブ（卒業ライブ・250組） ---
+    // --- 大ライブ（NSC卒業ライブ・250組） ---
     function startBigLive() {
-        setStory(`ついに翌年4月がやってきた。<br>NSCの総決算、250組が参加する卒業ライブ「大ライブ」の本番を迎える！`);
+        setStory(`ついにNSC卒業の4月がやってきた。<br>総決算として250組が参加する卒業ライブ「大ライブ」の本番を迎える！`);
         
         setChoices([
             {
@@ -670,9 +756,9 @@
 
                     setChoices([
                         {
-                            text: 'プロフェッショナル（劇場メンバー）編へ進む',
+                            text: '1年目（プロフェッショナル編）へ進む',
                             action: () => {
-                                alert('1年目が無事に終了しました！ここから劇場サバイバル編へ繋がります。');
+                                startYearlyPolicySelection(); // 1年目4月の方針選択へ
                             }
                         }
                     ]);
