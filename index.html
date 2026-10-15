@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>芸人ガチャ ＜よしもと＞</title>
+<style>
+    /* 全体のデザイン（ポップなベージュ×濃いグレー） */
+    body {
+        background-color: #f4ecd8; /* ベージュ */
+        color: #333333; /* 濃いグレー */
+        font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+    }
+    h1 {
+        color: #d95319; /* 濃いオレンジ */
+        font-size: 2.5em;
+        margin-bottom: 5px;
+        text-shadow: 1px 1px 0px #fff;
+    }
+    p {
+        font-size: 1.1em;
+        line-height: 1.6;
+    }
+    .accent {
+        color: #d95319;
+        font-weight: bold;
+    }
+    
+    /* コンテナ */
+    #game-container {
+        background-color: #ffffff;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        border: 3px solid #d95319;
+    }
+
+    /* ボタン */
+    button {
+        background-color: #d95319;
+        color: #ffffff;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.2em;
+        font-weight: bold;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: transform 0.1s, background-color 0.2s;
+        margin-top: 20px;
+    }
+    button:hover {
+        background-color: #bf4310;
+        transform: scale(1.05);
+    }
+    button:active {
+        transform: scale(0.95);
+    }
+
+    /* ステータス表示エリア */
+    #status-area {
+        text-align: left;
+        background-color: #faf6eb;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+        border: 1px dashed #d95319;
+        display: none;
+    }
+    .status-item {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 5px;
+    }
+
+    /* 入力エリア */
+    #naming-area {
+        display: none;
+        margin-top: 20px;
+    }
+    input[type="text"] {
+        padding: 10px;
+        font-size: 1.2em;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        width: 80%;
+        margin-bottom: 10px;
+    }
+    input[type="text"]:focus {
+        border-color: #d95319;
+        outline: none;
+    }
+
+    /* 隠し要素 */
+    .hidden {
+        display: none !important;
+    }
+</style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>芸人ガチャ</h1>
+    <p style="color:#d95319; font-weight:bold; margin-top:0;">＜よしもと＞</p>
+    
+    <div id="start-screen">
+        <p>僕らの人生、笑えない。<br>あなたの芸人人生は、ここから決まります。</p>
+        <button onclick="rollGacha()">NSC願書を提出する（ガチャを回す）</button>
+    </div>
+
+    <div id="status-area">
+        <h2 style="text-align:center; color:#d95319; margin-top:0;">【初期ステータス】</h2>
+        <div id="stats-content"></div>
+    </div>
+
+    <div id="naming-area">
+        <p id="naming-msg"></p>
+        <input type="text" id="name-input" placeholder="入力しない場合は自動生成されます">
+        <br>
+        <button onclick="decideName()">決定</button>
+    </div>
+
+    <div id="next-area" class="hidden">
+        <h2 id="final-name" class="accent"></h2>
+        <p>いよいよ、NSCでの1年目が始まります！</p>
+        <button onclick="alert('プロトタイプはここまでです！ここから相方探しやネタ見せイベントに繋がります。')">1年目を開始する</button>
+    </div>
+</div>
+
+<script>
+    // グローバル変数
+    let isDuo = false;
+
+    // ガチャのデータ
+    const regions = ['東京', '大阪', '地方（上京組）', '地方（大阪組）'];
+    const families = ['超裕福（仕送り月30万）', '中流家庭', '普通の家庭', '貧乏（奨学金とバイト頼り）', 'その日暮らしの極貧'];
+    const relationships = ['高校の同級生', '幼なじみ', '大学お笑いサークルの先輩後輩', 'バイト先の同僚', 'ネットの相方掲示板'];
+
+    // コンビ名自動生成用パーツ
+    const namePart1 = ['鉄骨', '東京', '電脳', 'ぽけっと', 'スーパー', '爆笑', 'センチメンタル', 'マカロニ', '真空'];
+    const namePart2 = ['チェリー', 'スパンコール', 'モグラ', 'ロケット', 'ダイナマイツ', 'トルネード', 'ボーイズ', 'サラダ', 'ジェシカ'];
+
+    function rollGacha() {
+        document.getElementById('start-screen').style.display = 'none';
+        
+        // 基本ステータスの抽選
+        let gender = Math.random() < 0.5 ? '男性' : '女性';
+        
+        // 学歴と年齢の抽選
+        let eduRand = Math.random();
+        let edu, age, special = '';
+        
+        if (eduRand < 0.05) {
+            edu = '中卒'; age = Math.floor(Math.random() * 3) + 16; // 16-18
+            if (Math.random() < 0.1) special = '★ハイスクールマンザイ実績持ち';
+        } else if (eduRand < 0.25) {
+            edu = '高卒'; age = Math.floor(Math.random() * 3) + 18; // 18-20
+            if (Math.random() < 0.2) special = '★ハイスクールマンザイ実績持ち';
+        } else if (eduRand < 0.50) {
+            edu = '専門卒 / 短大卒'; age = Math.floor(Math.random() * 3) + 20; // 20-22
+        } else if (eduRand < 0.95) {
+            edu = '大卒'; age = Math.floor(Math.random() * 4) + 22; // 22-25
+            let r = Math.random();
+            if (r < 0.1) special = '★大学芸会（学生お笑い）実績持ち';
+            else if (r < 0.15) special = '★トップ国立大卒（クイズ番組枠候補）';
+        } else {
+            edu = '大学院卒'; age = Math.floor(Math.random() * 5) + 24; // 24-28
+        }
+
+        let region = regions[Math.floor(Math.random() * regions.length)];
+        let family = families[Math.floor(Math.random() * families.length)];
+        let luck = Math.floor(Math.random() * 100) + 1; // 隠しパラメータ（プロトタイプでは一旦表示せずに保持）
+
+        // 入学形態の抽選
+        isDuo = Math.random() < 0.5;
+        let admission = isDuo ? 'コンビで入学' : '1人で入学（ピン）';
+        let partnerText = '';
+        
+        if (isDuo) {
+            let pGender = Math.random() < 0.5 ? '男性' : '女性';
+            let relation = relationships[Math.floor(Math.random() * relationships.length)];
+            partnerText = `<div class="status-item"><strong>相方の情報:</strong> ${pGender} / ${relation}</div>`;
+        }
+
+        // HTML生成
+        let html = `
+            <div class="status-item"><strong>スタート年齢:</strong> ${age}歳</div>
+            <div class="status-item"><strong>学歴:</strong> ${edu} <span class="accent">${special}</span></div>
+            <div class="status-item"><strong>活動拠点:</strong> ${region}</div>
+            <div class="status-item"><strong>実家の太さ:</strong> ${family}</div>
+            <div class="status-item"><strong>入学形態:</strong> <span class="accent">${admission}</span></div>
+            ${partnerText}
+        `;
+        // 運は表示しないが、内部的には保持されている想定（console.log等で確認可能）
+        console.log("隠しパラメータ 運: " + luck);
+
+        document.getElementById('stats-content').innerHTML = html;
+        document.getElementById('status-area').style.display = 'block';
+
+        // 名前入力エリアの表示
+        document.getElementById('naming-area').style.display = 'block';
+        if (isDuo) {
+            document.getElementById('naming-msg').innerText = '相方と一緒にNSCの門を叩きました。\nお二人の「コンビ名」を決めてください。';
+        } else {
+            document.getElementById('naming-msg').innerText = '1人でNSCの門を叩きました。\nまずはあなたの「芸名」を決めてください。';
+        }
+    }
+
+    function decideName() {
+        let inputName = document.getElementById('name-input').value.trim();
+        let finalName = '';
+
+        if (inputName !== '') {
+            finalName = inputName;
+        } else {
+            // 空欄の場合は自動生成
+            if (isDuo) {
+                let p1 = namePart1[Math.floor(Math.random() * namePart1.length)];
+                let p2 = namePart2[Math.floor(Math.random() * namePart2.length)];
+                finalName = p1 + p2;
+                alert(`コンビ名が思いつかなかったので、適当に「${finalName}」で願書を出しました。`);
+            } else {
+                finalName = '本名そのまま';
+                alert(`芸名が思いつかなかったので、とりあえず本名で願書を出しました。`);
+            }
+        }
+
+        let prefix = isDuo ? 'コンビ名' : '芸名';
+        document.getElementById('naming-area').style.display = 'none';
+        document.getElementById('final-name').innerText = `${prefix}：${finalName}`;
+        document.getElementById('next-area').classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
