@@ -200,7 +200,7 @@
     let generatedMyName = '';
     let finalCombiName = '';
     let selectedFamily = '';
-    let occupationText = ''; // 前職/属性
+    let occupationText = ''; 
     let initialMoney = 5;
     let luckStat = 50;
     let globalAge = 20;
@@ -213,6 +213,7 @@
     let comedyStyle = ''; 
     let stats = { money: 0, stamina: 100, neta: 5, hiraba: 5, pop: 0, relation: 50 };
     let historyLog = [];
+    let currentPolicy = 'balanced'; 
 
     const lastNames = ['佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山田', '松本', '浜田', '石田', '山口', '斎藤', '木村', '林', '清水', '山崎', '池田', '阿部', '森', '橋本', '山下', '石川', '中島', '前田', '藤井', '小川', '岡田', '長谷川', '村上', '近藤', '石井', '坂本', '遠藤', '青木', '藤田', '西村', '福田', '太田', '三浦', '岡本', '松田', '中川', '中野', '原田', '小野'];
     const firstNamesMale = ['翔太', '大輝', '健太', '拓海', '翼', '蓮', '真', '大輔', '隆史', '和也', '樹', '湊', '悠真', '陽翔', '朝陽', '蒼', '結翔', '悠人', '陽太', '陸', '大翔', '悠', '颯太', '歩夢', '空', '太陽', '涼平', '浩二', '誠', '達也'];
@@ -308,7 +309,6 @@
             occupationText = Math.random() < 0.2 ? '大学院生' : occupations[Math.floor(Math.random() * occupations.length)];
         }
 
-        // 社会人の場合は10万〜100万円の貯金
         if (!['中学生', '高校生', '専門生', '大学生', '大学院生'].includes(occupationText)) {
             initialMoney = Math.floor(Math.random() * 91) + 10;
         } else {
@@ -334,7 +334,6 @@
             document.getElementById('naming-label').innerHTML = '希望する芸名 (任意)';
         }
 
-        // 願書プレビューに「前職 / ステータス」を追加して描画
         document.getElementById('stats-content').innerHTML = `
             <div class="form-row" style="margin-bottom: 12px;">
                 <div class="form-label" style="margin-top: 6px;">氏名</div>
@@ -440,7 +439,7 @@
         document.getElementById('result-screen').classList.add('hidden');
         document.getElementById('main-screen').classList.remove('hidden');
 
-        stats.money = initialMoney; // 前職の貯金や初期資金を反映
+        stats.money = initialMoney; 
         currentYearNumber = 0; // NSC時代
         currentMonth = 4;
 
@@ -522,13 +521,15 @@
         ]);
     }
 
-    // --- 毎月のループ進行エンジン ---
+    // --- 毎月のループ進行エンジン（4〜3月順・オート進行） ---
     function advanceMonth() {
-        if (currentMonth === 4) {
+        // 4月になったら「年間方針の選択」を行う
+        if (currentMonth === 4 && (currentYearNumber > 0 || combiMonths > 0)) {
             startYearlyPolicySelection();
             return;
         }
 
+        // 3月の次は翌年4月（NSCなら卒業ライブ、それ以外は年度末・大ライブなど）
         if (currentMonth === 3) {
             if (hasCombi) {
                 let yearlyDissolveRate = isInitialDuo ? 0.05 : 0.40; 
@@ -550,45 +551,64 @@
             return;
         }
 
+        // 月を進行（4 -> 5 -> ... -> 12 -> 1 -> 2 -> 3）
         currentMonth++;
+        if (currentMonth === 13) {
+            currentMonth = 1;
+        }
         if (hasCombi) combiMonths++;
 
+        // 7月（夏前）かつピンの場合：2回目相方探しの会
         if (currentMonth === 7 && !hasCombi) {
             startSecondSoloEvent();
             return;
         }
 
+        // 8月：学内ライブ
+        if (currentMonth === 8 && currentYearNumber === 0) {
+            startSchoolLive();
+            return;
+        }
+
+        // 通常月：ユーザーにクリックさせず自動で行動してオート進行
+        processAutoMonthEvent();
+    }
+
+    // --- 通常月のオートイベント（勝手にネタ合わせや飲みを行う） ---
+    function processAutoMonthEvent() {
         let timeStr = currentYearNumber === 0 ? `NSC ${currentMonth}月` : `${currentYearNumber}年目 ${currentMonth}月`;
-        setStory(`【${timeStr}】<br>今月は何に注力しますか？`);
+        
+        let actionDesc = "";
+        if (currentPolicy === 'netazukuri') {
+            stats.neta += 4;
+            stats.money -= 1;
+            actionDesc = "ネタ作りに没頭した（ネタ力UP / 資金微減）。";
+        } else if (currentPolicy === 'stable') {
+            stats.money += 2;
+            actionDesc = "バイトに明け暮れて生活費を稼いだ（資金増）。";
+        } else {
+            if (Math.random() < 0.6) {
+                stats.neta += 2;
+                actionDesc = "相方と地道にネタ合わせを行った。";
+            } else if (hasCombi && stats.money >= 1) {
+                stats.money -= 1;
+                stats.relation = Math.min(100, stats.relation + 5);
+                actionDesc = "相方と軽く飲みに行ってコミュニケーションを取った。";
+            } else {
+                stats.money += 1;
+                actionDesc = "少しだけバイトをして小銭を稼いだ。";
+            }
+        }
+
+        addHistory(`${currentMonth}月：${actionDesc}`);
+        updateUI();
+
+        setStory(`【${timeStr}】<br>${actionDesc}<br><br>日々の地道な活動をこなしていく……。`);
         setChoices([
             {
-                text: 'ネタ合わせに励む（ネタ力UP / 体力微減）',
+                text: '次へ進む',
                 action: () => {
-                    stats.neta += 3;
-                    stats.stamina -= 10;
-                    addHistory(`${currentMonth}月：ネタ合わせに励んだ。`);
-                    updateUI();
                     advanceMonth();
-                }
-            },
-            {
-                text: '相方と飲みに行く（コンビ仲UP / 資金消費）',
-                action: () => {
-                    if (!hasCombi) {
-                        alert("現在相方がいません！");
-                        advanceMonth();
-                        return;
-                    }
-                    if (stats.money >= 1) {
-                        stats.money -= 1;
-                        stats.relation = Math.min(100, stats.relation + 10);
-                        addHistory(`${currentMonth}月：相方と飲みに行き、絆を深めた。`);
-                        updateUI();
-                        advanceMonth();
-                    } else {
-                        alert("資金が足りません！");
-                        advanceMonth();
-                    }
                 }
             }
         ]);
@@ -602,10 +622,11 @@
             {
                 text: 'ネタに注力（ほとんどバイトしない / ネタ力大幅UP・資金大幅減）',
                 action: () => {
+                    currentPolicy = 'netazukuri';
                     stats.neta += 8;
                     stats.money -= 4; 
                     if (stats.money < 0) addHistory('生活費が足りず、借金生活に突入した…。');
-                    addHistory('年間方針：ネタに注力（バイトをほぼせずネタを磨く）');
+                    addHistory('年間方針：ネタに注力');
                     updateUI();
                     advanceMonthAfterPolicy();
                 }
@@ -613,6 +634,7 @@
             {
                 text: 'バイトとネタ半分ずつ（バランス型 / ネタ力小UP・資金維持）',
                 action: () => {
+                    currentPolicy = 'balanced';
                     stats.neta += 4;
                     stats.money += 2;
                     addHistory('年間方針：バイトとネタを両立');
@@ -623,6 +645,7 @@
             {
                 text: 'とにかく生活の安定（バイト多め / 資金増・ネタ力停滞）',
                 action: () => {
+                    currentPolicy = 'stable';
                     stats.money += 6;
                     addHistory('年間方針：バイト多めで生活の安定を図る');
                     updateUI();
@@ -636,19 +659,11 @@
         currentMonth++;
         if (hasCombi) combiMonths++;
         let timeStr = currentYearNumber === 0 ? `NSC ${currentMonth}月` : `${currentYearNumber}年目 ${currentMonth}月`;
-        setStory(`【${timeStr}】<br>方針を決めて新たな1ヶ月が始まった。今月は何をしますか？`);
+        setStory(`【${timeStr}】<br>新しい方針のもと、活動がスタートした。`);
         setChoices([
             {
-                text: 'ネタ合わせに励む',
-                action: () => { stats.neta += 3; stats.stamina -= 10; addHistory(`${currentMonth}月：ネタ合わせに励んだ。`); updateUI(); advanceMonth(); }
-            },
-            {
-                text: '相方と飲みに行く',
-                action: () => { 
-                    if (!hasCombi) { advanceMonth(); return; }
-                    if (stats.money >= 1) { stats.money -= 1; stats.relation = Math.min(100, stats.relation + 10); addHistory(`${currentMonth}月：相方と飲んだ。`); updateUI(); advanceMonth(); }
-                    else { alert("資金不足！"); advanceMonth(); }
-                }
+                text: '次へ進む',
+                action: () => { advanceMonth(); }
             }
         ]);
     }
@@ -667,6 +682,33 @@
         }
     }
 
+    // --- 8月：学内ライブ ---
+    function startSchoolLive() {
+        setStory(`【NSC 8月：夏期学内ライブ】<br>同期全員の前でネタを披露する最初の大きな試練「学内ライブ」の日がやってきた！`);
+        setChoices([
+            {
+                text: '学内ライブのステージに上がる',
+                action: () => {
+                    let score = (stats.neta * 2) + (stats.hiraba * 1.5) + luckStat;
+                    let rank = Math.max(1, 100 - Math.floor(score + Math.random() * 20));
+                    
+                    addHistory(`8月：学内ライブで100組中「第${rank}位」を獲得！`);
+                    if (rank <= 10) stats.pop += 5;
+                    updateUI();
+
+                    setStory(`【学内ライブ結果】<br>同期100組中……<br><br><span style="font-size:1.3em; color:#d95319; font-weight:bold;">第 ${rank} 位</span><br><br>${rank <= 10 ? '講師や同期の前で大ウケし、一目置かれる存在になった！' : 'まずまずのウケ具合で無事にライブを終えた。'}`);
+                    setChoices([
+                        {
+                            text: '通常の生活に戻る',
+                            action: () => { advanceMonth(); }
+                        }
+                    ]);
+                }
+            }
+        ]);
+    }
+
+    // --- 夏前の「2回目相方探しの会」 ---
     function startSecondSoloEvent() {
         setStory(`【7月・夏前】<br>ピンとして活動していたあなたに、同期から「そろそろコンビ組まないか？」と声がかかる時期がやってきた。<br>相方探しの会に参加してみよう。`);
         setChoices([
@@ -721,6 +763,7 @@
         ]);
     }
 
+    // --- 大ライブ（NSC卒業ライブ・250組） ---
     function startBigLive() {
         setStory(`ついにNSC卒業の4月がやってきた。<br>総決算として250組が参加する卒業ライブ「大ライブ」の本番を迎える！`);
         
