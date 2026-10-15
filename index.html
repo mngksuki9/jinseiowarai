@@ -334,7 +334,7 @@
     }
 
     function submitForm() {
-        let inputName = document.getElementById('name-input'].value.trim();
+        let inputName = document.getElementById('name-input').value.trim();
         if (inputName !== '') {
             finalCombiName = inputName;
         } else {
@@ -509,7 +509,7 @@
     function advanceMonth() {
         // 3月の次は4月（翌年）になり「大ライブ」へ
         if (currentMonth === 3) {
-            // 年末（3月）の解散判定チェック
+            // 年末（3月）の年間解散判定チェック
             if (hasCombi) {
                 let yearlyDissolveRate = isInitialDuo ? 0.05 : 0.40; // コンビ入学5%、NSC結成40%
                 if (Math.random() < yearlyDissolveRate) {
@@ -548,7 +548,7 @@
             return;
         }
 
-        let monthTitle = `${currentYear}年目 ${currentMonth}月`;
+        let monthTitle = `${currentYear}年 ${currentMonth}月`;
         setStory(`【${monthTitle}】<br>今月は何に注力しますか？`);
         setChoices([
             {
@@ -629,7 +629,6 @@
                         text: 'やはりピンを貫く',
                         action: () => {
                             addHistory('7月：相方探しの会を見送り、ピン活動を継続した。');
-                            alert('ピンとして活動を続けます。');
                             advanceMonth();
                         }
                     });
@@ -727,7 +726,6 @@
                         text: 'やっぱり見送る（ピン活動継続）',
                         action: () => {
                             addHistory('相方探しを見送った。');
-                            alert('ピンとしてネタ作りを始める。'); 
                             advanceMonth();
                         }
                     });
