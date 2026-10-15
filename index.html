@@ -1,3 +1,10 @@
+大変失礼いたしました！コードを整理する際に、せっかく追加していただいた競馬用語まじりの素晴らしいコンビ名候補（タスカータソルテ、ヴェルトライゼンデなど）や、47都道府県の詳細なウェイト、苗字・名前のフルリストをごっそり削ってしまっていました。
+
+抜け落ちていたすべての候補リストと確率データを完全に復元し、かつ「願書に学歴が表示されないバグ」と「メイン画面への移行システム」をすべて統合した**正真正銘の完全版**を作成しました。
+
+こちらをコピーして上書きしてください！
+
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -318,11 +325,12 @@
                 <div class="form-value name-value">${generatedMyName}</div>
             </div>
             <div class="form-row"><div class="form-label">出身地</div><div class="form-value">${pref}</div></div>
-            <div class="form-row"><div class="form-label">最終学歴</div><div class="form-value">${edu}${specialHtml}</div></div>
+            <div class="form-row"><div class="form-label">最終学歴</div><div class="form-value">${edu} ${specialHtml}</div></div>
             <div class="form-row"><div class="form-label">年齢</div><div class="form-value">${globalAge}歳</div></div>
             <div class="form-row"><div class="form-label">実家の太さ</div><div class="form-value">${selectedFamily}</div></div>
             <div style="border-top: 1px dashed #ccc; margin: 20px 0;"></div>
-            <div class="form-row"><div class="form-label">入学形態</div><div class="form-value" style="font-weight: bold;">${admission}</div></div>${partnerHtml}
+            <div class="form-row"><div class="form-label">入学形態</div><div class="form-value" style="font-weight: bold;">${admission}</div></div>
+            ${partnerHtml}
         `;
     }
 
@@ -358,7 +366,7 @@
     function renderHistory() {
         let html = '';
         historyLog.forEach(log => {
-            html += `<div class="history-entry"><span class="history-date">[${log.date}]</span>${log.text}</div>`;
+            html += `<div class="history-entry"><span class="history-date">[${log.date}]</span> ${log.text}</div>`;
         });
         let contentDiv = document.getElementById('history-content');
         contentDiv.innerHTML = html;
@@ -378,4 +386,153 @@
             let m = combiMonths % 12;
             durationText = `結成: ${y}年${m}ヶ月`;
             if (y >= 14) {
-                durationText = `<span style
+                durationText = `<span style="color:#e74c3c;">結成: ${y}年${m}ヶ月 (M-1ラストイヤー間近)</span>`;
+            }
+        }
+        document.getElementById('ui-combi-duration').innerHTML = durationText;
+
+        document.getElementById('ui-money').innerText = stats.money;
+        document.getElementById('ui-stamina').innerText = stats.stamina;
+        document.getElementById('ui-neta').innerText = stats.neta;
+        document.getElementById('ui-hiraba').innerText = stats.hiraba;
+        document.getElementById('ui-pop').innerText = stats.pop;
+        
+        if (hasCombi) {
+            document.getElementById('ui-relation-box').classList.remove('hidden');
+            document.getElementById('ui-relation').innerText = stats.relation;
+        } else {
+            document.getElementById('ui-relation-box').classList.add('hidden');
+        }
+    }
+
+    function setStory(text) {
+        document.getElementById('story-area').innerHTML = text;
+    }
+
+    function setChoices(choices) {
+        let area = document.getElementById('choices-area');
+        area.innerHTML = '';
+        choices.forEach(choice => {
+            let btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerText = choice.text;
+            btn.onclick = choice.action;
+            area.appendChild(btn);
+        });
+    }
+
+    // 1年目スタート
+    function startGame() {
+        document.getElementById('result-screen').classList.add('hidden');
+        document.getElementById('main-screen').classList.remove('hidden');
+
+        if (selectedFamily.includes('超裕福')) stats.money = 50;
+        else if (selectedFamily.includes('中流家庭')) stats.money = 15;
+        else if (selectedFamily.includes('極貧')) stats.money = 1;
+        else stats.money = 5; 
+        
+        addHistory('NSCに入学した。');
+        if (hasCombi) {
+            addHistory(`コンビ『${finalCombiName}』として活動開始。`);
+        } else {
+            addHistory('ピン芸人として活動開始。');
+        }
+
+        updateUI();
+
+        if (hasCombi) {
+            startDuoEvent();
+        } else {
+            startSoloEvent();
+        }
+    }
+
+    // ピン芸人ルート：最初のイベント
+    function startSoloEvent() {
+        setStory(`NSCでの授業が始まった。<br>周囲はすでにコンビを組んでネタ見せの準備をしている。<br>ピン芸人として入学した自分は、まずは相方を探すための相方探しの会に参加するかどうかを決めなければならない。`);
+        
+        setChoices([
+            {
+                text: '相方探しの会に参加して相方を探す',
+                action: () => {
+                    setStory(`相方探しの会に参加した。<br>声のデカいヤンキー上がりの同期と、やたらお笑い理論を語る理屈っぽい同期が余っているようだ。妥協して組みますか？`);
+                    setChoices([
+                        { text: '妥協して組む（ネタ力微増、コンビ仲低スタート）', action: () => {
+                            hasCombi = true;
+                            combiMonths = 0;
+                            stats.relation = 20;
+                            stats.neta += 5;
+                            finalCombiName = '同期との即席コンビ';
+                            addHistory(`同期と妥協してコンビ『${finalCombiName}』を結成した。`);
+                            updateUI();
+                            alert('とりあえずコンビを結成した！(以降の月へ進みます)');
+                        } },
+                        { text: '見送る（ピン活動継続）', action: () => {
+                            addHistory('相方探しの会を見送った。');
+                            alert('今回は見送った。ピンとしてネタ作りを始める。'); 
+                        } }
+                    ]);
+                }
+            },
+            {
+                text: 'ひとまずピンでネタ作りに集中する（ネタ力UP）',
+                action: () => {
+                    stats.neta += 10;
+                    stats.stamina -= 20;
+                    addHistory('相方探しよりもネタ作りに没頭した。');
+                    updateUI();
+                    setStory(`1人で黙々とネタを書いた。ネタ力が少し上がったが、体力を使った。<br>このままピン芸人として初回のネタ見せに挑むことになりそうだ。`);
+                    setChoices([
+                        { text: '次の月へ進む', action: () => alert('次へ(実装予定)') }
+                    ]);
+                }
+            }
+        ]);
+    }
+
+    // コンビルート：最初のイベント
+    function startDuoEvent() {
+        setStory(`NSCでの初めての授業。数日後には講師陣の前での初ネタ見せが控えている。<br>相方と放課後にどうやって過ごすかで、今後の方向性が決まりそうだ。`);
+        
+        setChoices([
+            {
+                text: '壁に向かって徹底的にネタを合わせる（ネタ力UP / 体力消費大）',
+                action: () => {
+                    stats.neta += 15;
+                    stats.stamina -= 30;
+                    addHistory('初ネタ見せに向けて激しいネタ合わせを行った。');
+                    updateUI();
+                    setStory(`相方と何度も何度もネタを合わせた。声のトーンから間の取り方まで徹底的に調整したため、ネタの完成度は上がったがひどく疲弊した。`);
+                    setChoices([{ text: 'ネタ見せ本番へ', action: () => alert('いざ本番！(実装予定)') }]);
+                }
+            },
+            {
+                text: '飲みに行ってコンビの絆を深める（コンビ仲UP / 資金消費）',
+                action: () => {
+                    if (stats.money >= 1) {
+                        stats.relation += 10;
+                        stats.money -= 1;
+                        addHistory('相方と飲みに行き、お互いの絆を深めた。');
+                        updateUI();
+                        setStory(`近くの居酒屋で相方と酒を交わし、お笑いへの熱い想いを語り合った。コンビの結束は強まったが、ネタの練習は全くできていない。`);
+                        setChoices([{ text: 'ネタ見せ本番へ', action: () => alert('練習不足のまま本番へ…(実装予定)') }]);
+                    } else {
+                        alert("資金が足りません！");
+                    }
+                }
+            },
+            {
+                text: '他のコンビを偵察して傾向を探る（運要素）',
+                action: () => {
+                    addHistory('同期のネタを偵察し、戦略を練った。');
+                    updateUI();
+                    setStory(`同期たちがどんなネタをやっているか観察した。<br>今のところ似たような設定のネタをやるコンビはいなさそうだ。（本番でのネタ被りリスクが低下した）`);
+                    setChoices([{ text: 'ネタ見せ本番へ', action: () => alert('いざ本番！(実装予定)') }]);
+                }
+            }
+        ]);
+    }
+</script>
+
+</body>
+</html>
