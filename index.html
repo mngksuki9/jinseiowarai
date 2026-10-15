@@ -19,7 +19,6 @@
         box-sizing: border-box;
     }
 
-    /* 願書・メイン画面のコンテナ（スマホ最適化） */
     #game-container, #main-screen {
         background-color: #ffffff;
         width: 100%;
@@ -38,7 +37,6 @@
         pointer-events: none;
     }
 
-    /* タイトル部分 */
     .form-title {
         color: #2c3e50;
         font-size: 1.3em;
@@ -88,7 +86,6 @@
     button:hover { background-color: #1a252f; }
     button:active { transform: scale(0.98); }
     
-    /* メインゲーム用の追加CSS（スマホ向けコンパクト化） */
     #status-bar {
         background-color: #2c3e50; color: #fff; padding: 8px; border-radius: 4px;
         font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75em;
@@ -98,7 +95,6 @@
     .status-item { width: 32%; margin-bottom: 4px; }
     .status-item span { color: #f39c12; font-weight: bold; font-size: 1.1em; }
     
-    /* ヘッダー情報 */
     .status-header { 
         width: 100%; font-size: 1em; font-weight: bold; margin-bottom: 8px; 
         color: #f0f2f5; border-bottom: 1px solid #555; padding-bottom: 4px;
@@ -114,7 +110,6 @@
     .choice-btn { background-color: #d95319; font-weight: bold; font-size: 0.9em; width: 100%; text-align: center; }
     .choice-btn:hover { background-color: #bf4310; }
 
-    /* 履歴ログエリア */
     #history-area {
         margin-top: 15px;
         padding: 10px;
@@ -147,14 +142,12 @@
 </head>
 <body>
 
-<!-- スタート画面 -->
 <div id="start-screen" style="text-align: center; width: 100%; max-width: 420px; margin-top: 30px; font-family: 'Helvetica Neue', Arial, sans-serif; box-sizing: border-box;">
     <h1 style="color: #2c3e50; font-size: 1.8em; margin-bottom: 10px;">芸人ガチャ <span style="color:#d95319; font-size:0.8em;">＜よしもと＞</span></h1>
     <p style="color: #555; line-height: 1.5; font-size: 0.95em; padding: 0 10px;">笑える人生になるかはあなた次第。<br>あなたの芸人人生は、ここから決まります。</p>
     <button onclick="rollGacha()" style="margin-top: 15px; width: 80%;">願書を作成する</button>
 </div>
 
-<!-- 願書画面 -->
 <div id="game-container" class="hidden">
     <div class="stamp">願書<br>作成中</div>
     <div class="form-title">入 学 願 書</div>
@@ -168,7 +161,6 @@
     </div>
 </div>
 
-<!-- 提出完了画面 -->
 <div id="result-screen" class="hidden" style="text-align: center; width: 100%; max-width: 420px; margin-top: 30px; font-family: 'Helvetica Neue', Arial, sans-serif; background: #fff; padding: 25px 15px; border: 2px solid #2c3e50; position: relative; box-sizing: border-box;">
     <div class="stamp" style="border-color: #5cb85c; color: #5cb85c; transform: rotate(-10deg);">受理済</div>
     <h2 style="color: #2c3e50; font-size: 1.3em;">願書を受理しました</h2>
@@ -176,9 +168,7 @@
     <button onclick="startGame()" style="margin-top: 10px; width: 80%;">1年目を開始する</button>
 </div>
 
-<!-- メインゲーム画面 -->
 <div id="main-screen" class="hidden">
-    <!-- ステータスバー -->
     <div id="status-bar">
         <div class="status-header">
             <span><span id="ui-year">1</span>年 <span id="ui-month">4</span>月 (<span id="ui-age">22</span>歳)</span>
@@ -193,32 +183,27 @@
         <div class="status-item" id="ui-relation-box">コンビ仲: <span id="ui-relation">50</span></div>
     </div>
     
-    <!-- テキストエリア -->
     <div id="story-area">
         ここにテキストが表示されます。
     </div>
 
-    <!-- 選択肢エリア -->
-    <div id="choices-area">
-        <!-- ボタンが動的に追加されます -->
-    </div>
+    <div id="choices-area"></div>
 
-    <!-- 履歴エリア -->
     <div id="history-area">
         <div style="color: #bdc3c7; margin-bottom: 6px; font-weight: bold; font-size: 0.9em;">▼ 芸人人生の記録</div>
         <div id="history-content"></div>
     </div>
 </div>
 <script>
-    // --- 初期データ ---
     let isDuo = false;
+    let isInitialDuo = false; 
     let generatedMyName = '';
     let finalCombiName = '';
     let selectedFamily = '';
     let luckStat = 50;
     let globalAge = 20;
+    let specialBuffText = '';
 
-    // 進行・ステータスデータ
     let currentYear = 1;
     let currentMonth = 4;
     let combiMonths = 0;
@@ -227,7 +212,6 @@
     let stats = { money: 0, stamina: 100, neta: 5, hiraba: 5, pop: 0, relation: 50 };
     let historyLog = [];
 
-    // --- 完全復元版データ配列（省略なし） ---
     const lastNames = ['佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山田', '松本', '浜田', '石田', '山口', '斎藤', '木村', '林', '清水', '山崎', '池田', '阿部', '森', '橋本', '山下', '石川', '中島', '前田', '藤井', '小川', '岡田', '長谷川', '村上', '近藤', '石井', '坂本', '遠藤', '青木', '藤田', '西村', '福田', '太田', '三浦', '岡本', '松田', '中川', '中野', '原田', '小野'];
     const firstNamesMale = ['翔太', '大輝', '健太', '拓海', '翼', '蓮', '真', '大輔', '隆史', '和也', '樹', '湊', '悠真', '陽翔', '朝陽', '蒼', '結翔', '悠人', '陽太', '陸', '大翔', '悠', '颯太', '歩夢', '空', '太陽', '涼平', '浩二', '誠', '達也'];
     const firstNamesFemale = ['さくら', '結衣', '陽菜', '莉子', '美咲', 'あおい', '楓', '七海', '愛', '瞳', '凛', '紬', '澪', '結愛', '陽葵', '琴音', '杏', '結月', '桜', '詩', '美月', '結菜', '咲良', '莉奈', '真由', '彩音', '華', '美穂', '香織', '奈々'];
@@ -298,18 +282,19 @@
         
         let eduRand = Math.random();
         let edu, special = '';
+        specialBuffText = '';
         if (eduRand < 0.05) { 
             edu = '中学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 16; 
         } else if (eduRand < 0.25) { 
             edu = '高等学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 18; 
-            if (Math.random() < 0.2) special = '★ハイスクールマンザイ実績持ち';
+            if (Math.random() < 0.2) { special = '★ハイスクールマンザイ実績持ち'; specialBuffText = special; }
         } else if (eduRand < 0.50) { 
             edu = '専門学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 20; 
         } else if (eduRand < 0.95) { 
             edu = '大学 卒業'; globalAge = Math.floor(Math.random() * 4) + 22; 
             let r = Math.random();
-            if (r < 0.1) special = '★大学芸会（学生お笑い）実績持ち';
-            else if (r < 0.15) special = '★トップ国立大卒（クイズ番組枠候補）';
+            if (r < 0.1) { special = '★大学芸会実績持ち'; specialBuffText = special; }
+            else if (r < 0.15) { special = '★トップ国立大卒'; specialBuffText = special; }
         } else { 
             edu = '大学院 修了'; globalAge = Math.floor(Math.random() * 5) + 24; 
         }
@@ -319,6 +304,7 @@
         luckStat = Math.floor(Math.random() * 100) + 1;
 
         isDuo = Math.random() < 0.5;
+        isInitialDuo = isDuo; 
         let admission = isDuo ? 'コンビ入学' : '単独入学（ピン）';
         hasCombi = isDuo;
         
@@ -348,7 +334,7 @@
     }
 
     function submitForm() {
-        let inputName = document.getElementById('name-input').value.trim();
+        let inputName = document.getElementById('name-input'].value.trim();
         if (inputName !== '') {
             finalCombiName = inputName;
         } else {
@@ -368,8 +354,6 @@
         document.getElementById('final-announcement').innerText = (isDuo ? 'コンビ「' : 'ピン芸人「') + finalCombiName + '」として登録完了';
     }
 
-    // --- メインゲーム進行ロジック ---
-    
     function addHistory(text) {
         let dateStr = `${currentYear}年 ${currentMonth}月`;
         historyLog.push({ date: dateStr, text: text });
@@ -500,13 +484,8 @@
                 text: '初ネタ見せの本番を迎える',
                 action: () => {
                     let score = stats.neta + Math.floor(Math.random() * 10);
-                    let resultText = "";
-                    if (score > 15) {
-                        resultText = "講師陣から高評価を受けた！同期たちに少し差をつけたようだ。";
-                        stats.pop += 2;
-                    } else {
-                        resultText = "緊張で噛んでしまい、講師陣からは厳しいダメ出しを食らってしまった…。";
-                    }
+                    let resultText = score > 15 ? "講師陣から高評価を受けた！" : "緊張で噛んでしまい、厳しいダメ出しを食らった…。";
+                    if (score > 15) stats.pop += 2;
 
                     addHistory('初ネタ見せの本番を終えた。');
                     updateUI();
@@ -515,9 +494,186 @@
                     
                     setChoices([
                         {
-                            text: '1年目の月を進める',
+                            text: '1年目の生活をスタートする',
                             action: () => {
-                                alert('毎月の年間方針選択（バイト、ネタ作りなど）へ進みます！');
+                                advanceMonth(); 
+                            }
+                        }
+                    ]);
+                }
+            }
+        ]);
+    }
+
+    // --- 毎月のループ進行エンジン ---
+    function advanceMonth() {
+        // 3月の次は4月（翌年）になり「大ライブ」へ
+        if (currentMonth === 3) {
+            // 年末（3月）の解散判定チェック
+            if (hasCombi) {
+                let yearlyDissolveRate = isInitialDuo ? 0.05 : 0.40; // コンビ入学5%、NSC結成40%
+                if (Math.random() < yearlyDissolveRate) {
+                    hasCombi = false;
+                    addHistory(`方向性の違いから、3月を迎えるタイミングでコンビ『${finalCombiName}』が解散…。`);
+                    setStory(`【解散の危機】<br>年度末の話し合いの末、ついに相方と解散することになってしまった…。再びピン芸人として活動を続けます。`);
+                    updateUI();
+                    setChoices([
+                        {
+                            text: 'ピンとして活動を続ける',
+                            action: () => { 
+                                currentMonth = 4;
+                                currentYear++;
+                                globalAge++;
+                                startBigLive(); 
+                            }
+                        }
+                    ]);
+                    return;
+                }
+            }
+
+            currentMonth = 4;
+            currentYear++;
+            globalAge++;
+            startBigLive();
+            return;
+        }
+
+        currentMonth++;
+        if (hasCombi) combiMonths++;
+
+        // 夏前（7月）かつピンの場合：2回目相方探しの会が発生
+        if (currentMonth === 7 && !hasCombi) {
+            startSecondSoloEvent();
+            return;
+        }
+
+        let monthTitle = `${currentYear}年目 ${currentMonth}月`;
+        setStory(`【${monthTitle}】<br>今月は何に注力しますか？`);
+        setChoices([
+            {
+                text: 'ネタ合わせに励む（ネタ力UP / 体力微減）',
+                action: () => {
+                    stats.neta += 3;
+                    stats.stamina -= 10;
+                    addHistory(`${currentMonth}月：ネタ合わせに励んだ。`);
+                    updateUI();
+                    advanceMonth();
+                }
+            },
+            {
+                text: '相方と飲みに行く（コンビ仲UP / 資金消費）',
+                action: () => {
+                    if (!hasCombi) {
+                        alert("現在相方がいません！");
+                        advanceMonth();
+                        return;
+                    }
+                    if (stats.money >= 1) {
+                        stats.money -= 1;
+                        stats.relation = Math.min(100, stats.relation + 10);
+                        addHistory(`${currentMonth}月：相方と飲みに行き、絆を深めた。`);
+                        updateUI();
+                        advanceMonth();
+                    } else {
+                        alert("資金が足りません！");
+                        advanceMonth();
+                    }
+                }
+            }
+        ]);
+    }
+
+    // --- 夏前の「2回目相方探しの会」 ---
+    function startSecondSoloEvent() {
+        setStory(`【7月・夏前】<br>ピンとして活動していたあなたに、同期から「そろそろコンビ組まないか？」と声がかかる時期がやってきた。<br>相方探しの会に参加してみよう。`);
+        setChoices([
+            {
+                text: '2回目相方探しの会に参加する',
+                action: () => {
+                    let shuffledArchetypes = [...partnerArchetypes].sort(() => 0.5 - Math.random());
+                    let candidates = shuffledArchetypes.slice(0, 3);
+                    let candidatesHtml = candidates.map((c, i) => `<strong>候補${i+1}: ${c.desc}</strong><br><span style="font-size:0.85em;color:#555;">${c.text}</span>`).join('<br><br>');
+                    
+                    setStory(`2回目相方探しの会には、まだコンビが決まっていない個性豊かな同期が集まっている。<br><br>${candidatesHtml}<br><br>誰と組みますか？`);
+                    
+                    let newChoices = candidates.map((c, i) => {
+                        return {
+                            text: `候補${i+1}（${c.desc}）と組む`,
+                            action: () => {
+                                let pGender = Math.random() < 0.7 ? '男' : '女';
+                                let pName = getRandomName(pGender);
+                                
+                                hasCombi = true;
+                                combiMonths = 0;
+                                stats.neta += c.neta;
+                                stats.hiraba += c.hiraba;
+                                stats.pop += c.pop;
+                                stats.relation = c.relation;
+                                stats.money += c.money;
+                                
+                                if (Math.random() < 0.7) {
+                                    finalCombiName = namePart1[Math.floor(Math.random() * namePart1.length)] + namePart2[Math.floor(Math.random() * namePart2.length)];
+                                } else {
+                                    finalCombiName = singleNames[Math.floor(Math.random() * singleNames.length)];
+                                }
+
+                                addHistory(`7月：夏前の相方探しで「${c.desc}」の${pName}と新コンビ『${finalCombiName}』を結成した。`);
+                                updateUI();
+                                startStyleSelection(); 
+                            }
+                        }
+                    });
+                    
+                    newChoices.push({
+                        text: 'やはりピンを貫く',
+                        action: () => {
+                            addHistory('7月：相方探しの会を見送り、ピン活動を継続した。');
+                            alert('ピンとして活動を続けます。');
+                            advanceMonth();
+                        }
+                    });
+
+                    setChoices(newChoices);
+                }
+            }
+        ]);
+    }
+
+    // --- 翌年4月：大ライブ（卒業ライブ・250組） ---
+    function startBigLive() {
+        setStory(`ついに翌年4月がやってきた。<br>NSCの総決算、250組が参加する卒業ライブ「大ライブ」の本番を迎える！`);
+        
+        setChoices([
+            {
+                text: '大ライブのステージに全力で挑む',
+                action: () => {
+                    let baseScore = (stats.neta * 2) + (stats.hiraba * 1.5) + luckStat;
+                    if (isInitialDuo) baseScore += 20; 
+                    if (specialBuffText !== '') baseScore += 15; 
+
+                    let randomFactor = Math.floor(Math.random() * 50);
+                    let calculatedRank = Math.max(1, 250 - Math.floor(baseScore + randomFactor));
+
+                    addHistory(`大ライブに参加。250組中「第${calculatedRank}位」となった！`);
+                    updateUI();
+
+                    let resultComment = "";
+                    if (calculatedRank <= 3) {
+                        resultComment = "なんと上位入賞を果たし、事務所の即戦力として大注目を浴びた！最高すべりだしだ！";
+                    } else if (calculatedRank <= 30) {
+                        resultComment = "上位に食い込み、劇場の若手枠への切符を掴み取った！";
+                    } else {
+                        resultComment = "健闘したものの、上位の壁は厚く悔しい結果に終わった…。ここから這い上がるしかない！";
+                    }
+
+                    setStory(`【大ライブ結果発表】<br>参加250組中……<br><br><span style="font-size:1.4em; color:#d95319; font-weight:bold;">第 ${calculatedRank} 位</span><br><br>${resultComment}`);
+
+                    setChoices([
+                        {
+                            text: 'プロフェッショナル（劇場メンバー）編へ進む',
+                            action: () => {
+                                alert('1年目が無事に終了しました！ここから劇場サバイバル編へ繋がります。');
                             }
                         }
                     ]);
@@ -535,7 +691,6 @@
                 action: () => {
                     let shuffledArchetypes = [...partnerArchetypes].sort(() => 0.5 - Math.random());
                     let candidates = shuffledArchetypes.slice(0, 3);
-                    
                     let candidatesHtml = candidates.map((c, i) => `<strong>候補${i+1}: ${c.desc}</strong><br><span style="font-size:0.85em;color:#555;">${c.text}</span>`).join('<br><br>');
                     
                     setStory(`相方探しの会に参加した。<br>${candidatesHtml}<br><br>誰と組みますか？`);
@@ -573,6 +728,7 @@
                         action: () => {
                             addHistory('相方探しを見送った。');
                             alert('ピンとしてネタ作りを始める。'); 
+                            advanceMonth();
                         }
                     });
 
@@ -588,7 +744,7 @@
                     updateUI();
                     setStory(`1人で黙々とネタを書いた。ネタ力が少し上がったが、体力を使った。`);
                     setChoices([
-                        { text: '次の月へ進む', action: () => alert('次へ(実装予定)') }
+                        { text: '次の月へ進む', action: () => { advanceMonth(); } }
                     ]);
                 }
             }
