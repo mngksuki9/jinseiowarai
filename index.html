@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -221,7 +220,7 @@
     let stats = { money: 0, stamina: 100, neta: 5, hiraba: 5, pop: 0, relation: 50 };
     let historyLog = [];
 
-    // --- 完全復元版データ配列 ---
+    // --- 完全復元版データ配列（省略なし） ---
     const lastNames = ['佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山田', '松本', '浜田', '石田', '山口', '斎藤', '木村', '林', '清水', '山崎', '池田', '阿部', '森', '橋本', '山下', '石川', '中島', '前田', '藤井', '小川', '岡田', '長谷川', '村上', '近藤', '石井', '坂本', '遠藤', '青木', '藤田', '西村', '福田', '太田', '三浦', '岡本', '松田', '中川', '中野', '原田', '小野'];
     const firstNamesMale = ['翔太', '大輝', '健太', '拓海', '翼', '蓮', '真', '大輔', '隆史', '和也', '樹', '湊', '悠真', '陽翔', '朝陽', '蒼', '結翔', '悠人', '陽太', '陸', '大翔', '悠', '颯太', '歩夢', '空', '太陽', '涼平', '浩二', '誠', '達也'];
     const firstNamesFemale = ['さくら', '結衣', '陽菜', '莉子', '美咲', 'あおい', '楓', '七海', '愛', '瞳', '凛', '紬', '澪', '結愛', '陽葵', '琴音', '杏', '結月', '桜', '詩', '美月', '結菜', '咲良', '莉奈', '真由', '彩音', '華', '美穂', '香織', '奈々'];
@@ -254,6 +253,20 @@
     const namePart2 = ['チェリー', 'スパンコール', 'モグラ', 'ロケット', 'ダイナマイツ', 'トルネード', 'ボーイズ', 'サラダ', 'ジェシカ', 'サンダー', 'エクスプレス', 'クラブ', 'ブラザーズ', 'シスターズ', 'パンダ', 'サムライ', 'ドラゴン', 'ピーチ', 'マシンガン', 'スナイパー', 'ギャラクシー', 'モンスター', 'ゾンビ', 'パイレーツ', 'ファミリー', 'エンジェル', 'デビル', '太郎', '娘', '坊主', 'ハスラー', 'パラダイス', 'マジック', '定食', '弁当'];
     const singleNames = ['末脚自慢', 'タスカータソルテ', 'メトロノーム', 'ペトリコール', '蜃気楼', 'かげろう', 'ガレージ', '信号機', 'シャンプー', '冷蔵庫', '蛍光灯', 'ノートブック', 'カレンダー', 'ヴェルトライゼンデ', 'バンソウコウ', 'ほうき星', 'ブーメラン', 'アンテナ', '万華鏡', 'クレヨン', '画用紙', '少年の詩', 'ビー玉', 'けん玉', 'ルヴァンスレーヴ', 'ブランコ', 'すべり台', 'ジャングルジム', 'シーソー', 'ベンチ', '交差点', '南改札口', 'デュランダル', 'ぼくの路線図', 'つり革', '網棚', 'ブエナビスタ', 'キンチェム', 'パスポート', '辞書', '図鑑', '地図', '羅針盤', '望遠鏡', '顕微鏡', '虫眼鏡', 'フラスコ', 'ビーカー', 'ピンセット', 'アルコール'];
 
+    // --- 相方候補 10種類 ---
+    const partnerArchetypes = [
+        { desc: 'ヤンキー上がり', text: '気合いと根性はあるが、お笑いの基礎知識はゼロ。', neta: 1, hiraba: 5, pop: 2, relation: 40, money: 0 },
+        { desc: '理屈屋なお笑いマニア', text: '高度なネタを書けそうだが、プライドが高く衝突しそうだ。', neta: 10, hiraba: 2, pop: 0, relation: 20, money: 0 },
+        { desc: 'とにかく明るいギャガー', text: '場の空気を良くする天才だが、ネタの構成力は皆無。', neta: 1, hiraba: 10, pop: 5, relation: 60, money: 0 },
+        { desc: '容姿端麗なアイドル気質', text: 'すでにファンがつきそうだが、お笑いへの熱量は未知数。', neta: 2, hiraba: 3, pop: 15, relation: 50, money: 0 },
+        { desc: '元演劇部の演技派', text: 'コントの演技力はピカイチだが、平場のトークは弱そうだ。', neta: 8, hiraba: 2, pop: 3, relation: 50, money: 0 },
+        { desc: '金遣いの荒いボンボン', text: '組めば活動資金を出してくれそうだが、ハングリー精神はない。', neta: 3, hiraba: 4, pop: 2, relation: 40, money: 10 },
+        { desc: '暗くてボソボソ喋る奇才', text: '天才的なセンスを感じるが、コミュニケーションが全く取れない。', neta: 15, hiraba: 0, pop: -2, relation: 10, money: 0 },
+        { desc: '誰とでも仲良くなるコミュ強', text: 'コンビ仲は円満になりそうだが、ネタ作りは完全にこちら任せになりそうだ。', neta: 2, hiraba: 8, pop: 5, relation: 80, money: 0 },
+        { desc: '社会人経験ありのしっかり者', text: '礼儀正しく安定感があるが、若手らしい爆発力には欠けるかもしれない。', neta: 5, hiraba: 5, pop: 2, relation: 60, money: 3 },
+        { desc: '何をしでかすか分からない狂人', text: '爆発的な笑いを生むか、大事故を起こすか、全く読めない危険な匂いがする。', neta: 8, hiraba: 8, pop: -5, relation: 30, money: 0 }
+    ];
+
     function getRandomName(gender) {
         let ln = lastNames[Math.floor(Math.random() * lastNames.length)];
         let fn = gender === '男' ? firstNamesMale[Math.floor(Math.random() * firstNamesMale.length)] : firstNamesFemale[Math.floor(Math.random() * firstNamesFemale.length)];
@@ -280,18 +293,23 @@
         
         let eduRand = Math.random();
         let edu, special = '';
-        if (eduRand < 0.05) { edu = '中学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 16; } 
-        else if (eduRand < 0.25) { edu = '高等学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 18; 
+        if (eduRand < 0.05) { 
+            edu = '中学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 16; 
+        } else if (eduRand < 0.25) { 
+            edu = '高等学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 18; 
             if (Math.random() < 0.2) special = '★ハイスクールマンザイ実績持ち';
-        } 
-        else if (eduRand < 0.50) { edu = '専門学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 20; } 
-        else if (eduRand < 0.95) { edu = '大学 卒業'; globalAge = Math.floor(Math.random() * 4) + 22; 
+        } else if (eduRand < 0.50) { 
+            edu = '専門学校 卒業'; globalAge = Math.floor(Math.random() * 3) + 20; 
+        } else if (eduRand < 0.95) { 
+            edu = '大学 卒業'; globalAge = Math.floor(Math.random() * 4) + 22; 
             let r = Math.random();
             if (r < 0.1) special = '★大学芸会（学生お笑い）実績持ち';
             else if (r < 0.15) special = '★トップ国立大卒（クイズ番組枠候補）';
-        } 
-        else { edu = '大学院 修了'; globalAge = Math.floor(Math.random() * 5) + 24; }
+        } else { 
+            edu = '大学院 修了'; globalAge = Math.floor(Math.random() * 5) + 24; 
+        }
 
+        let specialHtml = special ? `<span class="special-buff">${special}</span>` : '';
         selectedFamily = getWeightedRandom(families);
         luckStat = Math.floor(Math.random() * 100) + 1;
         console.log("隠しパラメータ 運: " + luckStat);
@@ -310,9 +328,6 @@
             document.getElementById('naming-label').innerHTML = '希望する芸名<br><span style="font-size: 0.8em; font-weight: normal;">(任意)</span>';
         }
 
-        let specialHtml = special ? `<span class="special-buff">${special}</span>` : '';
-
-        // 願書表示部分（抜けを完全修正）
         document.getElementById('stats-content').innerHTML = `
             <div class="form-row" style="margin-bottom: 25px;">
                 <div class="form-label" style="margin-top: 15px;">氏名</div>
@@ -449,23 +464,52 @@
             {
                 text: '相方探しの会に参加して相方を探す',
                 action: () => {
-                    setStory(`相方探しの会に参加した。<br>声のデカいヤンキー上がりの同期と、やたらお笑い理論を語る理屈っぽい同期が余っているようだ。妥協して組みますか？`);
-                    setChoices([
-                        { text: '妥協して組む（ネタ力微増、コンビ仲低スタート）', action: () => {
-                            hasCombi = true;
-                            combiMonths = 0;
-                            stats.relation = 20;
-                            stats.neta += 5;
-                            finalCombiName = '同期との即席コンビ';
-                            addHistory(`同期と妥協してコンビ『${finalCombiName}』を結成した。`);
-                            updateUI();
-                            alert('とりあえずコンビを結成した！(以降の月へ進みます)');
-                        } },
-                        { text: '見送る（ピン活動継続）', action: () => {
-                            addHistory('相方探しの会を見送った。');
+                    // 10種類の候補からランダムに3人を抽出
+                    let shuffledArchetypes = [...partnerArchetypes].sort(() => 0.5 - Math.random());
+                    let candidates = shuffledArchetypes.slice(0, 3);
+                    
+                    let candidatesHtml = candidates.map((c, i) => `<strong>候補${i+1}: ${c.desc}</strong><br><span style="font-size:0.9em;color:#555;">${c.text}</span>`).join('<br><br>');
+                    
+                    setStory(`相方探しの会に参加した。いろんな思惑を持った同期たちが集まっている。<br>気になる3人に声をかけてみた。<br><br>${candidatesHtml}<br><br>誰と組みますか？`);
+                    
+                    let newChoices = candidates.map((c, i) => {
+                        return {
+                            text: `候補${i+1}（${c.desc}）と組む`,
+                            action: () => {
+                                let pGender = Math.random() < 0.7 ? '男' : '女';
+                                let pName = getRandomName(pGender);
+                                
+                                hasCombi = true;
+                                combiMonths = 0;
+                                stats.neta += c.neta;
+                                stats.hiraba += c.hiraba;
+                                stats.pop += c.pop;
+                                stats.relation = c.relation;
+                                stats.money += c.money;
+                                
+                                // コンビ名を自動生成
+                                if (Math.random() < 0.7) {
+                                    finalCombiName = namePart1[Math.floor(Math.random() * namePart1.length)] + namePart2[Math.floor(Math.random() * namePart2.length)];
+                                } else {
+                                    finalCombiName = singleNames[Math.floor(Math.random() * singleNames.length)];
+                                }
+
+                                addHistory(`「${c.desc}」の${pName}とコンビ『${finalCombiName}』を結成した。`);
+                                updateUI();
+                                alert(`相方「${pName}」とコンビを結成した！(以降の月へ進みます)`);
+                            }
+                        }
+                    });
+                    
+                    newChoices.push({
+                        text: 'やっぱり見送る（ピン活動継続）',
+                        action: () => {
+                            addHistory('相方探しの会で良い相手が見つからず、見送った。');
                             alert('今回は見送った。ピンとしてネタ作りを始める。'); 
-                        } }
-                    ]);
+                        }
+                    });
+
+                    setChoices(newChoices);
                 }
             },
             {
