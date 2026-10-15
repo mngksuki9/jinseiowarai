@@ -189,21 +189,36 @@
 </div>
 
 <script>
-    // グローバル変数
     let isDuo = false;
     let generatedMyName = '';
 
-    // データ群
-    const lastNames = ['佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山田', '松本', '浜田', '石田'];
-    const firstNamesMale = ['翔太', '大輝', '健太', '拓海', '翼', '蓮', '真', '大輔', '隆史', '和也'];
-    const firstNamesFemale = ['さくら', '結衣', '陽菜', '莉子', '美咲', 'あおい', '楓', '七海', '愛', '瞳'];
-    const regions = ['東京都', '大阪府', '北海道', '福岡県', '愛知県', '広島県', '宮城県', '沖縄県', '埼玉県', '千葉県'];
-    const families = ['超裕福（仕送り月30万）', '中流家庭', '普通の家庭', '貧乏（奨学金とバイト頼り）', 'その日暮らしの極貧'];
-    const relationships = ['高校の同級生', '幼なじみ', '大学お笑いサークルの先輩後輩', 'バイト先の同僚', 'ネットの相方掲示板'];
+    const lastNames = ['佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山田', '松本', '浜田', '石田', '山口', '斎藤', '木村', '林', '清水', '山崎', '池田', '阿部', '森', '橋本', '山下', '石川', '中島', '前田', '藤井', '小川', '岡田', '長谷川', '村上', '近藤', '石井', '坂本', '遠藤', '青木', '藤田', '西村', '福田', '太田', '三浦', '岡本', '松田', '中川', '中野', '原田', '小野'];
+    const firstNamesMale = ['翔太', '大輝', '健太', '拓海', '翼', '蓮', '真', '大輔', '隆史', '和也', '樹', '湊', '悠真', '陽翔', '朝陽', '蒼', '結翔', '悠人', '陽太', '陸', '大翔', '悠', '颯太', '歩夢', '空', '太陽', '涼平', '浩二', '誠', '達也'];
+    const firstNamesFemale = ['さくら', '結衣', '陽菜', '莉子', '美咲', 'あおい', '楓', '七海', '愛', '瞳', '凛', '紬', '澪', '結愛', '陽葵', '琴音', '杏', '結月', '桜', '詩', '美月', '結菜', '咲良', '莉奈', '真由', '彩音', '華', '美穂', '香織', '奈々'];
+    
+    // 【修正】47都道府県に確率の重み付け（数値が大きいほど出やすい）
+    const prefectures = [
+        {name: '大阪府', weight: 25}, {name: '東京都', weight: 20},
+        {name: '兵庫県', weight: 10}, {name: '京都府', weight: 10},
+        {name: '神奈川県', weight: 8}, {name: '埼玉県', weight: 8}, {name: '千葉県', weight: 8}, {name: '福岡県', weight: 6},
+        {name: '北海道', weight: 4}, {name: '愛知県', weight: 4}, {name: '広島県', weight: 4}, {name: '宮城県', weight: 4},
+        {name: '奈良県', weight: 3}, {name: '滋賀県', weight: 3}, {name: '和歌山県', weight: 2}, {name: '静岡県', weight: 2}, {name: '沖縄県', weight: 2},
+        // 以下の地方はすべてウェイト1（低確率）
+        {name: '青森県', weight: 1}, {name: '岩手県', weight: 1}, {name: '秋田県', weight: 1}, {name: '山形県', weight: 1}, {name: '福島県', weight: 1},
+        {name: '茨城県', weight: 1}, {name: '栃木県', weight: 1}, {name: '群馬県', weight: 1},
+        {name: '新潟県', weight: 1}, {name: '富山県', weight: 1}, {name: '石川県', weight: 1}, {name: '福井県', weight: 1},
+        {name: '山梨県', weight: 1}, {name: '長野県', weight: 1}, {name: '岐阜県', weight: 1}, {name: '三重県', weight: 1},
+        {name: '鳥取県', weight: 1}, {name: '島根県', weight: 1}, {name: '岡山県', weight: 1}, {name: '山口県', weight: 1},
+        {name: '徳島県', weight: 1}, {name: '香川県', weight: 1}, {name: '愛媛県', weight: 1}, {name: '高知県', weight: 1},
+        {name: '佐賀県', weight: 1}, {name: '長崎県', weight: 1}, {name: '熊本県', weight: 1}, {name: '大分県', weight: 1}, {name: '宮崎県', weight: 1}, {name: '鹿児島県', weight: 1}
+    ];
 
-    // コンビ名自動生成用パーツ
-    const namePart1 = ['鉄骨', '東京', '電脳', 'ぽけっと', 'スーパー', '爆笑', 'センチメンタル', 'マカロニ', '真空', '純白'];
-    const namePart2 = ['チェリー', 'スパンコール', 'モグラ', 'ロケット', 'ダイナマイツ', 'トルネード', 'ボーイズ', 'サラダ', 'ジェシカ', 'サンダー'];
+    const families = ['超裕福（仕送り月30万）', '中流家庭', '普通の家庭', '貧乏（奨学金とバイト頼り）', 'その日暮らしの極貧'];
+    const relationships = ['小学校の同級生','中学の同級生','高校の同級生','大学の同級生','専門の同級生', '幼なじみ', '大学お笑いサークルの先輩後輩', 'バイト先の同僚'];
+
+    const namePart1 = ['鉄骨', '東京', '電脳', 'ぽけっと', 'スーパー', '爆笑', 'センチメンタル', 'マカロニ', '真空', '純白', '弾丸', '黄金', '令和', '昭和', '平成', '世紀末', '幻の', '疾風', '漆黒', '虹色', '逆襲の', '永遠の', '週末', '深夜', '無限', '電撃', 'マッハ', 'ミラクル', 'ハッピー', 'アバンギャルド', 'ストロベリー', 'ダンボール', '雑草', '都会の', '宇宙'];
+    const namePart2 = ['チェリー', 'スパンコール', 'モグラ', 'ロケット', 'ダイナマイツ', 'トルネード', 'ボーイズ', 'サラダ', 'ジェシカ', 'サンダー', 'エクスプレス', 'クラブ', 'ブラザーズ', 'シスターズ', 'パンダ', 'サムライ', 'ドラゴン', 'ピーチ', 'マシンガン', 'スナイパー', 'ギャラクシー', 'モンスター', 'ゾンビ', 'パイレーツ', 'ファミリー', 'エンジェル', 'デビル', '太郎', '娘', '坊主', 'ハスラー', 'パラダイス', 'マジック', '定食', '弁当'];
+    const singleNames = ['末脚自慢', 'タスカータソルテ', 'メトロノーム', 'ペトリコール', '蜃気楼', 'かげろう', 'ガレージ', '信号機', 'シャンプー', '冷蔵庫', '蛍光灯', 'ノートブック', 'カレンダー', 'ヴェルトライゼンデ', 'バンソウコウ', 'ほうき星', 'ブーメラン', 'アンテナ', '万華鏡', 'クレヨン', '画用紙', '少年の詩', 'ビー玉', 'けん玉', 'ルヴァンスレーヴ', 'ブランコ', 'すべり台', 'ジャングルジム', 'シーソー', 'ベンチ', '交差点', '南改札口', 'デュランダル', 'ぼくの路線図', 'つり革', '網棚', 'ブエナビスタ', 'キンチェム', 'パスポート', '辞書', '図鑑', '地図', '羅針盤', '望遠鏡', '顕微鏡', '虫眼鏡', 'フラスコ', 'ビーカー', 'ピンセット', 'アルコール'];
 
     function getRandomName(gender) {
         let ln = lastNames[Math.floor(Math.random() * lastNames.length)];
@@ -211,21 +226,34 @@
         return ln + ' ' + fn;
     }
 
+    // 重み付けに基づいた都道府県の抽選
+    function getWeightedRandomPrefecture() {
+        let totalWeight = prefectures.reduce((sum, pref) => sum + pref.weight, 0);
+        let randomValue = Math.random() * totalWeight;
+        for (let i = 0; i < prefectures.length; i++) {
+            if (randomValue < prefectures[i].weight) {
+                return prefectures[i].name;
+            }
+            randomValue -= prefectures[i].weight;
+        }
+        return '大阪府'; // フォールバック
+    }
+
     function rollGacha() {
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('game-container').classList.remove('hidden');
         
-        // 基本情報抽選
-        let gender = Math.random() < 0.5 ? '男' : '女';
+        // プレイヤーの性別を 男性70% : 女性30% に設定
+        let gender = Math.random() < 0.7 ? '男' : '女';
         generatedMyName = getRandomName(gender);
-        let pref = regions[Math.floor(Math.random() * regions.length)];
         
-        // 学歴と年齢、特殊ステータス
+        // 都道府県の重み付け抽選
+        let pref = getWeightedRandomPrefecture();
+        
         let eduRand = Math.random();
         let edu, age, special = '';
         if (eduRand < 0.05) { 
             edu = '中学校 卒業'; age = Math.floor(Math.random() * 3) + 16;
-            if (Math.random() < 0.1) special = '★ハイスクールマンザイ実績持ち';
         } else if (eduRand < 0.25) { 
             edu = '高等学校 卒業'; age = Math.floor(Math.random() * 3) + 18;
             if (Math.random() < 0.2) special = '★ハイスクールマンザイ実績持ち';
@@ -241,17 +269,16 @@
         }
 
         let family = families[Math.floor(Math.random() * families.length)];
-        let luck = Math.floor(Math.random() * 100) + 1; // 隠しパラメータ
+        let luck = Math.floor(Math.random() * 100) + 1;
         console.log("隠しパラメータ 運: " + luck);
 
-        // 入学形態
         isDuo = Math.random() < 0.5;
         let admission = isDuo ? 'コンビ入学' : '単独入学（ピン）';
         
-        // 相方情報
         let partnerHtml = '';
         if (isDuo) {
-            let pGender = Math.random() < 0.5 ? '男' : '女';
+            // 相方の性別も 男性70% : 女性30% に設定
+            let pGender = Math.random() < 0.7 ? '男' : '女';
             let pName = getRandomName(pGender);
             let relation = relationships[Math.floor(Math.random() * relationships.length)];
             
@@ -272,7 +299,6 @@
 
         let specialHtml = special ? `<span class="special-buff">${special}</span>` : '';
 
-        // HTML組み立て
         let html = `
             <div class="form-row" style="margin-bottom: 25px;">
                 <div class="form-label" style="margin-top: 15px;">氏名</div>
@@ -314,26 +340,8 @@
         if (inputName !== '') {
             finalName = inputName;
         } else {
-            // 空欄の場合は自動生成
             if (isDuo) {
-                let p1 = namePart1[Math.floor(Math.random() * namePart1.length)];
-                let p2 = namePart2[Math.floor(Math.random() * namePart2.length)];
-                finalName = p1 + p2;
-                alert('コンビ名が未入力だったため、自動で「' + finalName + '」として登録されました。');
-            } else {
-                finalName = generatedMyName;
-                alert('芸名が未入力だったため、本名（' + finalName + '）で登録されました。');
-            }
-        }
-
-        // 画面切り替え
-        document.getElementById('game-container').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        
-        let prefix = isDuo ? 'コンビ' : 'ピン芸人';
-        document.getElementById('final-announcement').innerText = prefix + '「' + finalName + '」として登録完了';
-    }
-</script>
-
-</body>
-</html>
+                if (Math.random() < 0.7) {
+                    let p1 = namePart1[Math.floor(Math.random() * namePart1.length)];
+                    let p2 = namePart2[Math.floor(Math.random() * namePart2.length)];
+                    finalName = p1 + p2
