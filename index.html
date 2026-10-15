@@ -200,13 +200,13 @@
     let generatedMyName = '';
     let finalCombiName = '';
     let selectedFamily = '';
-    let occupationText = ''; // 前職/ステータス
+    let occupationText = ''; // 前職/属性
     let initialMoney = 5;
     let luckStat = 50;
     let globalAge = 20;
     let specialBuffText = '';
 
-    let currentYearNumber = 0; // 0 = NSC在籍中, 1 = 1年目, 2 = 2年目...
+    let currentYearNumber = 0; // 0 = NSC在籍中, 1 = 1年目...
     let currentMonth = 4;
     let combiMonths = 0;
     let hasCombi = false;
@@ -308,11 +308,11 @@
             occupationText = Math.random() < 0.2 ? '大学院生' : occupations[Math.floor(Math.random() * occupations.length)];
         }
 
-        // 社会人の場合は10万〜100万円の貯金を所持
+        // 社会人の場合は10万〜100万円の貯金
         if (!['中学生', '高校生', '専門生', '大学生', '大学院生'].includes(occupationText)) {
-            initialMoney = Math.floor(Math.random() * 91) + 10; // 10〜100
+            initialMoney = Math.floor(Math.random() * 91) + 10;
         } else {
-            initialMoney = Math.floor(Math.random() * 5) + 2; // 学生は2〜6万
+            initialMoney = Math.floor(Math.random() * 5) + 2;
         }
 
         let specialHtml = special ? `<span class="special-buff">${special}</span>` : '';
@@ -334,6 +334,7 @@
             document.getElementById('naming-label').innerHTML = '希望する芸名 (任意)';
         }
 
+        // 願書プレビューに「前職 / ステータス」を追加して描画
         document.getElementById('stats-content').innerHTML = `
             <div class="form-row" style="margin-bottom: 12px;">
                 <div class="form-label" style="margin-top: 6px;">氏名</div>
@@ -439,7 +440,7 @@
         document.getElementById('result-screen').classList.add('hidden');
         document.getElementById('main-screen').classList.remove('hidden');
 
-        stats.money = initialMoney; // 前職の貯金を反映
+        stats.money = initialMoney; // 前職の貯金や初期資金を反映
         currentYearNumber = 0; // NSC時代
         currentMonth = 4;
 
@@ -523,13 +524,11 @@
 
     // --- 毎月のループ進行エンジン ---
     function advanceMonth() {
-        // 4月になったら「年間方針の選択」を行う
         if (currentMonth === 4) {
             startYearlyPolicySelection();
             return;
         }
 
-        // 3月の次は翌年4月になり、NSC卒業なら「大ライブ」、卒業後なら年度末処理
         if (currentMonth === 3) {
             if (hasCombi) {
                 let yearlyDissolveRate = isInitialDuo ? 0.05 : 0.40; 
@@ -554,7 +553,6 @@
         currentMonth++;
         if (hasCombi) combiMonths++;
 
-        // 夏前（7月）かつピンの場合：2回目相方探しの会が発生
         if (currentMonth === 7 && !hasCombi) {
             startSecondSoloEvent();
             return;
@@ -605,7 +603,7 @@
                 text: 'ネタに注力（ほとんどバイトしない / ネタ力大幅UP・資金大幅減）',
                 action: () => {
                     stats.neta += 8;
-                    stats.money -= 4; // 生活費で赤字になりやすい
+                    stats.money -= 4; 
                     if (stats.money < 0) addHistory('生活費が足りず、借金生活に突入した…。');
                     addHistory('年間方針：ネタに注力（バイトをほぼせずネタを磨く）');
                     updateUI();
@@ -657,9 +655,8 @@
 
     function finishMarchTransition() {
         if (currentYearNumber === 0) {
-            // NSC 3月の次は「卒業＝1年目4月」になり、大ライブ開催！
             currentMonth = 4;
-            currentYearNumber = 1;
+            currentYearNumber = 1; // 1年目へ昇格
             globalAge++;
             startBigLive();
         } else {
@@ -670,7 +667,6 @@
         }
     }
 
-    // --- 夏前の「2回目相方探しの会」 ---
     function startSecondSoloEvent() {
         setStory(`【7月・夏前】<br>ピンとして活動していたあなたに、同期から「そろそろコンビ組まないか？」と声がかかる時期がやってきた。<br>相方探しの会に参加してみよう。`);
         setChoices([
@@ -725,7 +721,6 @@
         ]);
     }
 
-    // --- 大ライブ（NSC卒業ライブ・250組） ---
     function startBigLive() {
         setStory(`ついにNSC卒業の4月がやってきた。<br>総決算として250組が参加する卒業ライブ「大ライブ」の本番を迎える！`);
         
@@ -758,7 +753,7 @@
                         {
                             text: '1年目（プロフェッショナル編）へ進む',
                             action: () => {
-                                startYearlyPolicySelection(); // 1年目4月の方針選択へ
+                                startYearlyPolicySelection(); 
                             }
                         }
                     ]);
