@@ -202,7 +202,6 @@
         <div id="history-content"></div>
     </div>
 </div>
-
 <script>
     // --- 初期データ ---
     let isDuo = false;
@@ -217,6 +216,7 @@
     let currentMonth = 4;
     let combiMonths = 0;
     let hasCombi = false;
+    let comedyStyle = ''; // 漫才 / コント / どちらも
     let stats = { money: 0, stamina: 100, neta: 5, hiraba: 5, pop: 0, relation: 50 };
     let historyLog = [];
 
@@ -259,7 +259,7 @@
         { desc: '理屈屋なお笑いマニア', text: '高度なネタを書けそうだが、プライドが高く衝突しそうだ。', neta: 10, hiraba: 2, pop: 0, relation: 20, money: 0 },
         { desc: 'とにかく明るいギャガー', text: '場の空気を良くする天才だが、ネタの構成力は皆無。', neta: 1, hiraba: 10, pop: 5, relation: 60, money: 0 },
         { desc: '容姿端麗なアイドル気質', text: 'すでにファンがつきそうだが、お笑いへの熱量は未知数。', neta: 2, hiraba: 3, pop: 15, relation: 50, money: 0 },
-        { desc: '元演劇部の演技派', text: 'コントの演技力はピカイチだが、平場のトークは弱そうだ。', neta: 8, hiraba: 2, pop: 3, relation: 50, money: 0 },
+        { desc: '元劇団員の演技派', text: 'コントの演技力はピカイチだが、平場のトークは弱そうだ。', neta: 8, hiraba: 2, pop: 3, relation: 50, money: 0 },
         { desc: '金遣いの荒いボンボン', text: '組めば活動資金を出してくれそうだが、ハングリー精神はない。', neta: 3, hiraba: 4, pop: 2, relation: 40, money: 10 },
         { desc: '暗くてボソボソ喋る奇才', text: '天才的なセンスを感じるが、コミュニケーションが全く取れない。', neta: 15, hiraba: 0, pop: -2, relation: 10, money: 0 },
         { desc: '誰とでも仲良くなるコミュ強', text: 'コンビ仲は円満になりそうだが、ネタ作りは完全にこちら任せになりそうだ。', neta: 2, hiraba: 8, pop: 5, relation: 80, money: 0 },
@@ -312,7 +312,6 @@
         let specialHtml = special ? `<span class="special-buff">${special}</span>` : '';
         selectedFamily = getWeightedRandom(families);
         luckStat = Math.floor(Math.random() * 100) + 1;
-        console.log("隠しパラメータ 運: " + luckStat);
 
         isDuo = Math.random() < 0.5;
         let admission = isDuo ? 'コンビ入学' : '単独入学（ピン）';
@@ -393,7 +392,7 @@
         if (hasCombi) {
             let y = Math.floor(combiMonths / 12);
             let m = combiMonths % 12;
-            durationText = `結成: ${y}年${m}ヶ月`;
+            durationText = `結成: ${y}年${m}ヶ月 (${comedyStyle})`;
             if (y >= 14) {
                 durationText = `<span style="color:#e74c3c;">結成: ${y}年${m}ヶ月 (M-1ラストイヤー間近)</span>`;
             }
@@ -441,19 +440,49 @@
         else stats.money = 5; 
         
         addHistory('NSCに入学した。');
-        if (hasCombi) {
-            addHistory(`コンビ『${finalCombiName}』として活動開始。`);
-        } else {
-            addHistory('ピン芸人として活動開始。');
-        }
-
         updateUI();
 
         if (hasCombi) {
-            startDuoEvent();
+            addHistory(`コンビ『${finalCombiName}』として活動開始。`);
+            startStyleSelection(); // コンビ結成後にスタイル選択へ
         } else {
+            addHistory('ピン芸人として活動開始。');
             startSoloEvent();
         }
+    }
+
+    // --- 活動スタイル選択（漫才 / コント / どちらも） ---
+    function startStyleSelection() {
+        setStory(`コンビの活動スタイルを決定してください。`);
+        setChoices([
+            {
+                text: '漫才',
+                action: () => {
+                    comedyStyle = '漫才';
+                    addHistory('活動スタイルを「漫才」に決定した。');
+                    updateUI();
+                    startDuoEvent();
+                }
+            },
+            {
+                text: 'コント',
+                action: () => {
+                    comedyStyle = 'コント';
+                    addHistory('活動スタイルを「コント」に決定した。');
+                    updateUI();
+                    startDuoEvent();
+                }
+            },
+            {
+                text: 'どちらも',
+                action: () => {
+                    comedyStyle = 'どちらも';
+                    addHistory('活動スタイルを「二刀流（漫才・コント）」に決定した。');
+                    updateUI();
+                    startDuoEvent();
+                }
+            }
+        ]);
     }
 
     // ピン芸人ルート：最初のイベント
@@ -464,7 +493,6 @@
             {
                 text: '相方探しの会に参加して相方を探す',
                 action: () => {
-                    // 10種類の候補からランダムに3人を抽出
                     let shuffledArchetypes = [...partnerArchetypes].sort(() => 0.5 - Math.random());
                     let candidates = shuffledArchetypes.slice(0, 3);
                     
@@ -487,7 +515,6 @@
                                 stats.relation = c.relation;
                                 stats.money += c.money;
                                 
-                                // コンビ名を自動生成
                                 if (Math.random() < 0.7) {
                                     finalCombiName = namePart1[Math.floor(Math.random() * namePart1.length)] + namePart2[Math.floor(Math.random() * namePart2.length)];
                                 } else {
@@ -496,7 +523,8 @@
 
                                 addHistory(`「${c.desc}」の${pName}とコンビ『${finalCombiName}』を結成した。`);
                                 updateUI();
-                                alert(`相方「${pName}」とコンビを結成した！(以降の月へ進みます)`);
+                                // 相方が決まったのでスタイル選択へ
+                                startStyleSelection();
                             }
                         }
                     });
@@ -571,6 +599,4 @@
         ]);
     }
 </script>
-
-</body>
 </html>
