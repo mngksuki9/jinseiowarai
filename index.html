@@ -11,7 +11,7 @@
         background-image: linear-gradient(transparent 95%, #e1e5ea 5%);
         background-size: 100% 1.5em;
         color: #333;
-        font-family: "Yu Mincho", "MS Mincho", "Hiragino Mincho ProN", serif; /* 願書風の明朝体 */
+        font-family: "Yu Mincho", "MS Mincho", "Hiragino Mincho ProN", serif;
         margin: 0;
         padding: 20px;
         display: flex;
@@ -22,7 +22,7 @@
     #game-container {
         background-color: #ffffff;
         width: 100%;
-        max-width: 450px;
+        max-width: 500px;
         padding: 30px 20px;
         border: 2px solid #2c3e50;
         box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
@@ -48,6 +48,9 @@
         border-bottom: 1px solid #2c3e50;
         padding-bottom: 10px;
         display: inline-block;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* 赤いスタンプ風装飾 */
@@ -60,4 +63,277 @@
         border: 2px solid #d9534f;
         border-radius: 50%;
         color: #d9534f;
-        font-
+        font-weight: bold;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        line-height: 1.2;
+        transform: rotate(15deg);
+        opacity: 0.8;
+    }
+
+    /* レイアウト（項目と値） */
+    .form-row {
+        display: flex;
+        margin-bottom: 15px;
+        align-items: baseline;
+    }
+    .form-label {
+        width: 130px;
+        font-size: 0.85em;
+        color: #666;
+        flex-shrink: 0;
+    }
+    .form-value {
+        font-size: 1.05em;
+        color: #111;
+        flex-grow: 1;
+    }
+    .name-value {
+        font-size: 1.5em;
+        letter-spacing: 0.1em;
+    }
+    .special-buff {
+        color: #d95319;
+        font-size: 0.8em;
+        display: block;
+        font-weight: bold;
+        margin-top: 3px;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* 入力エリア */
+    input[type="text"] {
+        font-family: "Yu Mincho", "MS Mincho", serif;
+        font-size: 1em;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        width: 90%;
+        background-color: #fafafa;
+    }
+    input[type="text"]:focus {
+        border-color: #2c3e50;
+        outline: none;
+        background-color: #fff;
+    }
+
+    /* ボタンデザイン */
+    .btn-area {
+        text-align: center;
+        margin-top: 30px;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+    button {
+        background-color: #2c3e50;
+        color: #ffffff;
+        border: none;
+        padding: 12px 24px;
+        font-size: 1em;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+    }
+    button:hover {
+        background-color: #1a252f;
+    }
+    button:active {
+        transform: scale(0.98);
+    }
+
+    /* 隠し要素 */
+    .hidden {
+        display: none !important;
+    }
+</style>
+</head>
+<body>
+
+<!-- スタート画面 -->
+<div id="start-screen" style="text-align: center; max-width: 450px; margin-top: 50px; font-family: 'Helvetica Neue', Arial, sans-serif;">
+    <h1 style="color: #2c3e50;">芸人ガチャ <span style="color:#d95319;">＜よしもと＞</span></h1>
+    <p style="color: #555; line-height: 1.6;">僕らの人生、笑えない。<br>あなたの芸人人生は、ここから決まります。</p>
+    <button onclick="rollGacha()" style="margin-top: 20px;">NSC願書を作成する</button>
+</div>
+
+<!-- 願書（結果・入力）画面 -->
+<div id="game-container" class="hidden">
+    <div class="stamp" id="form-stamp">NSC<br>作成中</div>
+    <div class="form-title">入 学 願 書</div>
+
+    <div id="stats-content"></div>
+
+    <!-- コンビ名・芸名入力エリア -->
+    <div id="naming-area" style="border-top: 2px solid #2c3e50; margin-top: 25px; padding-top: 20px;">
+        <div class="form-row">
+            <div class="form-label" id="naming-label" style="font-weight: bold; color: #2c3e50;">コンビ名<br><span style="font-size: 0.8em; font-weight: normal;">(任意)</span></div>
+            <div class="form-value">
+                <input type="text" id="name-input" placeholder="未入力で自動生成されます">
+            </div>
+        </div>
+        <div class="btn-area">
+            <button onclick="submitForm()">この内容で願書を提出する</button>
+        </div>
+    </div>
+</div>
+
+<!-- 提出完了画面 -->
+<div id="result-screen" class="hidden" style="text-align: center; max-width: 450px; margin-top: 50px; font-family: 'Helvetica Neue', Arial, sans-serif; background: #fff; padding: 40px 20px; border: 2px solid #2c3e50; position: relative;">
+    <div class="stamp" style="border-color: #5cb85c; color: #5cb85c; transform: rotate(-10deg);">受理済</div>
+    <h2 style="color: #2c3e50;">願書を受理しました</h2>
+    <p id="final-announcement" style="font-size: 1.2em; font-weight: bold; color: #d95319; margin: 30px 0;"></p>
+    <p>いよいよ、NSCでの過酷な1年目が始まります。</p>
+    <button onclick="alert('プロトタイプはここまでです！')" style="margin-top: 20px;">1年目を開始する</button>
+</div>
+
+<script>
+    // グローバル変数
+    let isDuo = false;
+    let generatedMyName = '';
+
+    // データ群
+    const lastNames = ['佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山田', '松本', '浜田', '石田'];
+    const firstNamesMale = ['翔太', '大輝', '健太', '拓海', '翼', '蓮', '真', '大輔', '隆史', '和也'];
+    const firstNamesFemale = ['さくら', '結衣', '陽菜', '莉子', '美咲', 'あおい', '楓', '七海', '愛', '瞳'];
+    const regions = ['東京都', '大阪府', '北海道', '福岡県', '愛知県', '広島県', '宮城県', '沖縄県', '埼玉県', '千葉県'];
+    const families = ['超裕福（仕送り月30万）', '中流家庭', '普通の家庭', '貧乏（奨学金とバイト頼り）', 'その日暮らしの極貧'];
+    const relationships = ['高校の同級生', '幼なじみ', '大学お笑いサークルの先輩後輩', 'バイト先の同僚', 'ネットの相方掲示板'];
+
+    // コンビ名自動生成用パーツ
+    const namePart1 = ['鉄骨', '東京', '電脳', 'ぽけっと', 'スーパー', '爆笑', 'センチメンタル', 'マカロニ', '真空', '純白'];
+    const namePart2 = ['チェリー', 'スパンコール', 'モグラ', 'ロケット', 'ダイナマイツ', 'トルネード', 'ボーイズ', 'サラダ', 'ジェシカ', 'サンダー'];
+
+    function getRandomName(gender) {
+        let ln = lastNames[Math.floor(Math.random() * lastNames.length)];
+        let fn = gender === '男' ? firstNamesMale[Math.floor(Math.random() * firstNamesMale.length)] : firstNamesFemale[Math.floor(Math.random() * firstNamesFemale.length)];
+        return ln + ' ' + fn;
+    }
+
+    function rollGacha() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('game-container').classList.remove('hidden');
+        
+        // 基本情報抽選
+        let gender = Math.random() < 0.5 ? '男' : '女';
+        generatedMyName = getRandomName(gender);
+        let pref = regions[Math.floor(Math.random() * regions.length)];
+        
+        // 学歴と年齢、特殊ステータス
+        let eduRand = Math.random();
+        let edu, age, special = '';
+        if (eduRand < 0.05) { 
+            edu = '中学校 卒業'; age = Math.floor(Math.random() * 3) + 16;
+            if (Math.random() < 0.1) special = '★ハイスクールマンザイ実績持ち';
+        } else if (eduRand < 0.25) { 
+            edu = '高等学校 卒業'; age = Math.floor(Math.random() * 3) + 18;
+            if (Math.random() < 0.2) special = '★ハイスクールマンザイ実績持ち';
+        } else if (eduRand < 0.50) { 
+            edu = '専門学校 卒業'; age = Math.floor(Math.random() * 3) + 20; 
+        } else if (eduRand < 0.95) { 
+            edu = '大学 卒業'; age = Math.floor(Math.random() * 4) + 22; 
+            let r = Math.random();
+            if (r < 0.1) special = '★大学芸会（学生お笑い）実績持ち';
+            else if (r < 0.15) special = '★トップ国立大卒（クイズ番組枠候補）';
+        } else { 
+            edu = '大学院 修了'; age = Math.floor(Math.random() * 5) + 24; 
+        }
+
+        let family = families[Math.floor(Math.random() * families.length)];
+        let luck = Math.floor(Math.random() * 100) + 1; // 隠しパラメータ
+        console.log("隠しパラメータ 運: " + luck);
+
+        // 入学形態
+        isDuo = Math.random() < 0.5;
+        let admission = isDuo ? 'コンビ入学' : '単独入学（ピン）';
+        
+        // 相方情報
+        let partnerHtml = '';
+        if (isDuo) {
+            let pGender = Math.random() < 0.5 ? '男' : '女';
+            let pName = getRandomName(pGender);
+            let relation = relationships[Math.floor(Math.random() * relationships.length)];
+            
+            partnerHtml = `
+                <div class="form-row">
+                    <div class="form-label">相方氏名</div>
+                    <div class="form-value">${pName} (${pGender})</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">関係性</div>
+                    <div class="form-value">${relation}</div>
+                </div>
+            `;
+            document.getElementById('naming-label').innerHTML = 'コンビ名<br><span style="font-size: 0.8em; font-weight: normal;">(任意)</span>';
+        } else {
+            document.getElementById('naming-label').innerHTML = '希望する芸名<br><span style="font-size: 0.8em; font-weight: normal;">(任意)</span>';
+        }
+
+        let specialHtml = special ? `<span class="special-buff">${special}</span>` : '';
+
+        // HTML組み立て
+        let html = `
+            <div class="form-row" style="margin-bottom: 25px;">
+                <div class="form-label" style="margin-top: 15px;">氏名</div>
+                <div class="form-value name-value">
+                    ${generatedMyName}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">出身地</div>
+                <div class="form-value">${pref}</div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">最終学歴</div>
+                <div class="form-value">${edu} ${specialHtml}</div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">年齢</div>
+                <div class="form-value">${age}歳</div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">実家の太さ</div>
+                <div class="form-value">${family}</div>
+            </div>
+            <div style="border-top: 1px dashed #ccc; margin: 20px 0;"></div>
+            <div class="form-row">
+                <div class="form-label">入学形態</div>
+                <div class="form-value" style="font-weight: bold;">${admission}</div>
+            </div>
+            ${partnerHtml}
+        `;
+
+        document.getElementById('stats-content').innerHTML = html;
+    }
+
+    function submitForm() {
+        let inputName = document.getElementById('name-input').value.trim();
+        let finalName = '';
+
+        if (inputName !== '') {
+            finalName = inputName;
+        } else {
+            // 空欄の場合は自動生成
+            if (isDuo) {
+                let p1 = namePart1[Math.floor(Math.random() * namePart1.length)];
+                let p2 = namePart2[Math.floor(Math.random() * namePart2.length)];
+                finalName = p1 + p2;
+                alert('コンビ名が未入力だったため、自動で「' + finalName + '」として登録されました。');
+            } else {
+                finalName = generatedMyName;
+                alert('芸名が未入力だったため、本名（' + finalName + '）で登録されました。');
+            }
+        }
+
+        // 画面切り替え
+        document.getElementById('game-container').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        
+        let prefix = isDuo ? 'コンビ' : 'ピン芸人';
+        document.getElementById('final-announcement').innerText = prefix + '「' + finalName + '」として登録完了';
+    }
+</script>
+
+</body>
+</html>
